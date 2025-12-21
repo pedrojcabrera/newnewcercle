@@ -1,0 +1,78 @@
+############################
+# SISTEMA / SO
+############################
+.DS_Store
+Thumbs.db
+desktop.ini
+
+############################
+# VS CODE / IDEs
+############################
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+############################
+# COMPOSER / DEPENDENCIAS
+############################
+/vendor/
+
+############################
+# CODEIGNITER 4
+############################
+/writable/*
+!/writable/.htaccess
+
+.env
+
+############################
+# LOGS Y CACHE
+############################
+*.log
+*.cache
+*.tmp
+
+############################
+# TESTING / DEBUG
+############################
+phpunit.xml
+phpunit.xml.dist
+.phpunit.result.cache
+
+############################
+# NODE / FRONTEND (si no usas build)
+############################
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+############################
+# ARCHIVOS DE BACKUP
+############################
+*.bak
+*.old
+*.orig
+*.swp
+
+############################
+# ARCHIVOS DE SESIÓN / RUNTIME
+############################
+sessions/*
+cache/*
+tmp/*
+
+############################
+# ARCHIVOS DE SERVIDOR
+############################
+.htpasswd
+
+############################
+# ARCHIVOS GENERADOS
+############################
+*.zip
+*.tar
+*.gz
