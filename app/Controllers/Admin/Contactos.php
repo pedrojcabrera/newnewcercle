@@ -24,12 +24,10 @@ class Contactos extends BaseController
     {
         $this->model = new ContactosModel;
     }
-    
+
     public function lista(){
-        $contactos = $this->model->OrderBy('nombre')->findAll();
         $data = [
             'titulo'    => 'Contactos',
-            'contactos'  => $contactos,
             'calidades' => [
                 'mailing'       => 'Correos',
                 'invitaciones'  => 'Invitaciones',
@@ -44,6 +42,83 @@ class Contactos extends BaseController
         return view('admin/contactos/lista',$data);
     }
 
+    public function getContactosAjax(){
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['error' => 'Solo peticiones AJAX']);
+        }
+
+        $request = $this->request->getGet();
+
+        // Parámetros de DataTables
+        $draw = intval($request['draw'] ?? 1);
+        $start = intval($request['start'] ?? 0);
+        $length = intval($request['length'] ?? 10);
+        $searchValue = $request['search']['value'] ?? '';
+
+        // Columnas para ordenación
+        $columns = ['id', 'nombre', 'email', 'calidades'];
+        $orderColumnIndex = intval($request['order'][0]['column'] ?? 0);
+        $orderDir = $request['order'][0]['dir'] ?? 'asc';
+        $orderColumn = $columns[$orderColumnIndex] ?? 'nombre';
+
+        // Obtener contactos con calidades concatenadas en SQL (mucho más rápido)
+        $contactos = $this->model->getContactosConCalidades(
+            $length,
+            $start,
+            $searchValue,
+            $orderColumn,
+            $orderDir
+        );
+
+        // Total de registros filtrados
+        $recordsFiltered = $this->model->countContactosFiltrados($searchValue);
+
+        // Total de registros sin filtrar
+        $recordsTotal = $this->model->countAll();
+
+        // Preparar datos para DataTables
+        $data = [];
+
+        foreach ($contactos as $contacto) {
+            // Construir lista de calidades desde el campo concatenado
+            $calidadesHtml = '';
+            if (!empty($contacto->calidades_concat)) {
+                $calidadesArray = explode('|', $contacto->calidades_concat);
+                $calidadesArray = array_filter($calidadesArray); // Eliminar valores vacíos
+                if (!empty($calidadesArray)) {
+                    $calidadesHtml = '<ul>' .
+                        implode('', array_map(fn($c) => '<li class="calidades"><small class="form-text text-muted">' . $c . '</small></li>', $calidadesArray)) .
+                        '</ul>';
+                }
+            }
+
+            // Construir acciones
+            $acciones = '<a title="Editar" class="btn btn-success btn-sm bi-pencil" href="' . base_url('control/contactos/editar/' . $contacto->id) . '"> Editar</a> ';
+            $acciones .= '<form style="display: inline;" action="' . base_url('control/contactos/' . $contacto->id) . '" method="POST">';
+            $acciones .= '<input type="hidden" name="_method" value="DELETE">';
+            $acciones .= '<button type="submit" title="Borrar" class="btn btn-danger btn-sm bi-eraser" onclick="return confirm(\'¿ Confirma el borrado ?\');"> Borrar</button>';
+            $acciones .= '</form> ';
+            $acciones .= '<a title="Historia" class="btn btn-secondary btn-sm bi-clock-history" href="' . base_url('control/contactos/historia/' . $contacto->id) . '"> Historia</a> ';
+            $acciones .= '<a title="Inscribir" class="btn btn-warning btn-sm bi-pencil-square" href="' . base_url('control/inscripcionManual/' . $contacto->id) . '"> Inscribir</a>';
+
+            $data[] = [
+                '<span>' . $contacto->id . '</span>',
+                '<small>' . trim($contacto->nombre . ' ' . $contacto->apellidos) .
+                    (!empty($contacto->dni) ? '<br>DNI: ' . $contacto->dni : '') . '</small>',
+                '<small>' . trim($contacto->email) . '<br>Tel: ' . trim($contacto->telefono) . '</small>',
+                $calidadesHtml,
+                '<div class="text-end ico-acciones">' . $acciones . '</div>'
+            ];
+        }
+
+        return $this->response->setJSON([
+            'draw' => $draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data
+        ]);
+    }
+
     public function new(){
         $data = [
             'titulo' => 'Creación de Contactos',
@@ -56,9 +131,9 @@ class Contactos extends BaseController
             'nombre'    => 'required',
             'telefono'  => 'required',
             'correo'    => 'valid_email|is_unique[contactos.email]',
-            'dni'       => 'permit_empty|is_unique[contactos.dni]',   
+            'dni'       => 'permit_empty|is_unique[contactos.dni]',
         ];
-        
+
         if(!$this->validate($reglas)) {
             return redirect()->to(base_url('control/contactos/nuevo', $_SERVER['REQUEST_SCHEME']))->withInput();
         }
@@ -73,7 +148,7 @@ class Contactos extends BaseController
         $pintor = isset($post['pintor']) ? 1 : 0;
         $dtaller = isset($post['dtaller']) ? 1 : 0;
         $amigo = isset($post['amigo']) ? 1 : 0;
-        
+
         $this->model->insert([
             'nombre'        => trim($post['nombre']),
             'apellidos'     => trim($post['apellidos']),
@@ -129,7 +204,7 @@ class Contactos extends BaseController
         $pintor         = isset($post['pintor']) ? 1 : 0;
         $dtaller        = isset($post['dtaller']) ? 1 : 0;
         $amigo          = isset($post['amigo']) ? 1 : 0;
-        
+
         $datos = [
             'id'            => $id,
             'nombre'        => trim($post['nombre']),
@@ -150,7 +225,7 @@ class Contactos extends BaseController
             'dtaller'       => $dtaller,
             'amigo'         => $amigo,
         ];
-        
+
         $this->model->save($datos);
 
         return redirect()->to(base_url('control/contactos', $_SERVER['REQUEST_SCHEME']));
@@ -261,10 +336,10 @@ class Contactos extends BaseController
                 'fecha'     => $resumen->fechahora,
                 'destinos'  => nl2br(implode("\n",$destino)),
             ];
-            
+
             $histCorreos[] = $histCorreo;
         }
-        
+
         $data = [
             'titulo'    => 'Histórico',
             'id'        => $id,

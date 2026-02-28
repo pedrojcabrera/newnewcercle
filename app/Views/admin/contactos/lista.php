@@ -19,7 +19,7 @@
 
     <div class="card-body">
         <div class="table-responsive-sm">
-            <table class="miTabla mt-3" id="datatable">
+            <table class="miTabla mt-3" id="contactos-table">
                 <thead>
                     <tr>
                         <th scope="col">ID</th>
@@ -30,54 +30,52 @@
                     </tr>
                 </thead>
                 <tbody>
-
-                    <?php foreach ($contactos as $contacto): ?>
-                    <tr class="align-middle">
-                        <td class="id_lista"><span><?php echo $contacto->id; ?></span></td>
-                        <td>
-                            <small>
-                                <?php echo trim($contacto->nombre . ' ' . $contacto->apellidos); ?>
-                                <?php echo ! empty($contacto->dni) ? "<br>DNI: " . $contacto->dni : ""; ?>
-                            </small>
-                        </td>
-                        <td>
-                            <small>
-                                <?php echo trim($contacto->email) . "<br>Tel: " . trim($contacto->telefono); ?>
-                            </small>
-                        </td>
-                        <td>
-                            <ul>
-                                <?php foreach ($calidades as $campo => $calidad): ?>
-                                <?php if ($contacto->$campo): ?>
-                                <li class"calidades"><small id="helpId"
-                                        class="form-text text-muted"><?php echo $calidad; ?></small>
-                                </li>
-                                <?php endif; ?>
-                                <?php endforeach; ?>
-                            </ul>
-                        </td>
-                        <td class="text-end ico-acciones">
-                            <a name="" title="Editar" id="" class="btn btn-success btn-sm bi-pencil"
-                                href="<?php echo base_url('control/contactos/editar/' . $contacto->id); ?>"> Editar</a>
-                            <form style="display: inline;"
-                                action="<?php echo base_url('control/contactos/' . $contacto->id); ?>" method="POST">
-                                <input type="hidden" name="_method" value="DELETE">
-                                <button type="submit" title="Borrar" class="btn btn-danger btn-sm bi-eraser"
-                                    onclick="return confirm('¿ Confirma el borrado ?');"> Borrar</button>
-                            </form>
-                            <a name="" title="Historia" id="" class="btn btn-secondary btn-sm bi-clock-history"
-                                href="<?php echo base_url('control/contactos/historia/' . $contacto->id); ?>">
-                                Historia</a>
-                            <a name="" title="Inscribir" id="" class="btn btn-warning btn-sm bi-pencil-square"
-                                href="<?php echo base_url('control/inscripcionManual/' . $contacto->id); ?>">
-                                Inscribir</a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
+                    <!-- Los datos se cargan vía AJAX para mejorar el rendimiento -->
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
+<?php echo $this->endSection(); ?>
+
+<?php echo $this->section('masJS'); ?>
+<script>
+$(document).ready(function() {
+    $("#contactos-table").DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '<?php echo base_url('control/contactos/ajax', $_SERVER['REQUEST_SCHEME']); ?>',
+            type: 'GET',
+            error: function(xhr, error, code) {
+                console.error('Error al cargar datos:', error);
+            }
+        },
+        columns: [
+            { data: 0, orderable: true },  // ID
+            { data: 1, orderable: true },  // Contacto
+            { data: 2, orderable: false }, // Contactar
+            { data: 3, orderable: false }, // Calidad
+            { data: 4, orderable: false }  // Acciones
+        ],
+        pageLength: 25,
+        lengthMenu: [
+            [10, 25, 50, 100, 250, 500],
+            [10, 25, 50, 100, 250, 500]
+        ],
+        order: [[1, 'asc']], // Ordenar por nombre por defecto
+        language: {
+            decimal: ',',
+            thousands: '.',
+            url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json',
+            processing: 'Procesando...',
+            loadingRecords: 'Cargando...',
+        },
+        drawCallback: function(settings) {
+            // Re-aplicar estilos o eventos después de cada redibujado si es necesario
+        }
+    });
+});
+</script>
 <?php echo $this->endSection(); ?>

@@ -53,6 +53,7 @@ $routes->group('control', ['namespace' => 'App\Controllers\Admin', 'filter' => '
     $routes->delete('usuarios/(:num)', 'Usuarios::delete/$1');
 
     $routes->get('contactos', 'Contactos::lista');
+    $routes->get('contactos/ajax', 'Contactos::getContactosAjax');
     $routes->get('contactos/nuevo', 'Contactos::new');
     $routes->post('contactos/crear', 'Contactos::create');
     $routes->get('contactos/editar/(:num)', 'Contactos::edit/$1');
@@ -108,8 +109,8 @@ $routes->group('control', ['namespace' => 'App\Controllers\Admin', 'filter' => '
     $routes->delete('quitarDeEspera/(:num)', 'Eventos::quitarDeEspera/$1');
     $routes->post('contactoDesdeInscrito', 'Eventos::contactoDesdeInscrito');
     $routes->get('completaContactoDesdeInscrito/(:num)', 'Eventos::completaContactoDesdeInscrito/$1');
-    
-    
+
+
     $routes->get('fotos/(:num)', 'Eventos::fotos/$1');
     $routes->get('fotos/(:num)/(:any)', 'Eventos::eliminarFoto/$1/$2');
     $routes->post('fotos/(:num)', 'Eventos::agregarFotos/$1');

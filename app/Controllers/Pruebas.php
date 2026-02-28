@@ -20,11 +20,13 @@ class Pruebas extends BaseController
 
         $this->db = \Config\Database::connect();
     }
-    
+
     public function hasea(): string
     {
-        $this->db->query("UPDATE Usuarios SET pass = '". password_hash('Cercle46134', PASSWORD_BCRYPT) ."'");
-        
+        // Usar variable de entorno para la contraseña por defecto
+        $defaultPassword = env('defaultUserPassword', 'Cercle46134');
+        $data[] = $this->db->query("UPDATE Usuarios SET pass = '". password_hash($defaultPassword, PASSWORD_BCRYPT) ."'");
+
 
         return view('home',$data);
     }
@@ -56,7 +58,7 @@ class Pruebas extends BaseController
 
         $config = config('App');
         $baseURL = $config->baseURL;
-        
+
         echo "con parse_url: " . parse_url($baseURL, PHP_URL_HOST);
 
         echo "<hr>";
