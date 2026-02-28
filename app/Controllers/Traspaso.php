@@ -12,12 +12,12 @@ class Traspaso extends BaseController
 
 		$tablas = array('agenda_correos','cercledartfoios','contactos','correos','enlaces_de_interes','galerias','inscripciones','neventos','tiposeventos','usuarios', 'emailsinscripciones', 'inscritos', 'invitados');
 
-		// Datos de conexión
+		// Datos de conexión desde variables de entorno
 
-		$servidor = "localhost";
-		$usuario = "qvn651";
-		$password = "Cercle46134";
-		$base_de_datos = "qvn651";
+		$servidor = env('database.default.hostname', 'localhost');
+		$usuario = env('database.default.username', '');
+		$password = env('database.default.password', '');
+		$base_de_datos = env('database.default.database', '');
 
 		// Crear una conexión
 
@@ -50,7 +50,7 @@ class Traspaso extends BaseController
 				$tablasEliminadas[] = $tabla;
 
 				$sql = "DROP TABLE ".$tabla;
-				
+
 				if(!$conexion->query($sql)) {
 					echo ("Error al eliminar la tabla ".$tabla."<br>");
 				}
@@ -138,22 +138,22 @@ class Traspaso extends BaseController
 
 			if ($conexion->query($sql_insertar)) {
 				echo "Se insertó el campo tokenunico en $tabla<br>";
-				
+
 				$sql_consulta = "SELECT id, $columna_nombre FROM $tabla";
 				$resultado = $conexion->query($sql_consulta);
-		
+
 				if($resultado->num_rows > 0) {
-		
+
 					$columna_a_actualizar = 'tokenunico';
 
 					$registros = 0;
 					while($row = $resultado->fetch_object()) {
 						$id = $row->id;
-						
+
 						$valor_final = password_hash($id, PASSWORD_DEFAULT);
-		
+
 						$sql_update = "UPDATE $tabla SET $columna_a_actualizar = '$valor_final' WHERE id = $id";
-		
+
 						if($conexion->query($sql_update)) {
 							$registros++;
 						}
@@ -164,7 +164,7 @@ class Traspaso extends BaseController
 		}
 
 		$sql = "ALTER TABLE usuarios MODIFY pass VARCHAR(60)";
-				
+
 		if($conexion->query($sql)) {
 			echo "Se modificó la longitud del campo pass de 32 a 60 en registros de usuarios<br>";
 		}
@@ -175,7 +175,7 @@ class Traspaso extends BaseController
 		// Obtener el contenido de carpeta galerias
 
 		$dirOrigen = "paraTraspaso/galerias";
-		
+
 		$datosOrigen = scandir($dirOrigen);
 
 		foreach($datosOrigen as $datoOrigen){
@@ -208,13 +208,13 @@ class Traspaso extends BaseController
 		// Obtener el contenido de carpeta neventos
 
 		$dirOrigen = "paraTraspaso/imgusr/neventos";
-		
+
 		$datosOrigen = scandir($dirOrigen);
 
 		foreach($datosOrigen as $datoOrigen){
 
 			if($datoOrigen == '.' || $datoOrigen == "..") continue;
-			
+
 			$dirDestino = "imgEventos/".$datoOrigen;
 
 			if(is_dir($dirOrigen."/$datoOrigen")) {

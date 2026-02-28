@@ -6,8 +6,8 @@ use CodeIgniter\Config\BaseConfig;
 
 class Email extends BaseConfig
 {
-    public string $fromEmail  = 'noreply@cercledartfoios.com';
-    public string $fromName   = "Cercle d'Art Foios";
+    public string $fromEmail  = '';
+    public string $fromName   = '';
     public string $recipients = '';
 
     /**
@@ -28,17 +28,17 @@ class Email extends BaseConfig
     /**
      * SMTP Server Hostname
      */
-    public string $SMTPHost = 'smtp.serviciodecorreo.es';
+    public string $SMTPHost = '';
 
     /**
      * SMTP Username
      */
-    public string $SMTPUser = 'noreply@cercledartfoios.com';
+    public string $SMTPUser = '';
 
     /**
      * SMTP Password
      */
-    public string $SMTPPass = 'NoReply123';
+    public string $SMTPPass = '';
 
     /**
      * SMTP Port
@@ -118,4 +118,18 @@ class Email extends BaseConfig
      * Enable notify message from server
      */
     public bool $DSN = false;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        // Cargar configuración desde variables de entorno
+        $this->fromEmail = env('email.fromEmail', 'noreply@cercledartfoios.com');
+        $this->fromName = env('email.fromName', "Cercle d'Art Foios");
+        $this->SMTPHost = env('email.SMTPHost', 'smtp.serviciodecorreo.es');
+        $this->SMTPUser = env('email.SMTPUser', 'noreply@cercledartfoios.com');
+        $this->SMTPPass = env('email.SMTPPass', '');
+        $this->SMTPPort = (int) env('email.SMTPPort', 465);
+        $this->SMTPCrypto = env('email.SMTPCrypto', 'ssl');
+    }
 }

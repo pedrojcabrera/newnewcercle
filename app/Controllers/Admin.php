@@ -7,7 +7,7 @@ use App\Models\UsuariosModel;
 class Admin extends BaseController
 {
     private $UsuarioModel;
-    
+
     private $id;
     private $db;
     private $sql;
@@ -27,27 +27,29 @@ class Admin extends BaseController
         }
         return view('admin/dashboard',['titulo'=>'Administración']);
     }
-    
+
     public function login(){
 
         if($this->UsuarioModel->where('user', "admin")->countAllResults() < 1) {
+            // Usar variable de entorno para la contraseña de admin por defecto
+            $defaultAdminPassword = env('defaultAdminPassword', 'Itvitv123');
             $admin = [
                 'user' => 'admin',
-                'pass' => password_hash('Itvitv123', PASSWORD_DEFAULT),
+                'pass' => password_hash($defaultAdminPassword, PASSWORD_DEFAULT),
                 'admin'=> 1
             ];
         }
 
         $this->db = \Config\Database::connect();
         $this->sql = $this->db->table('usuarios');
-    
+
         if(!$this->session->logueado){
             return view('login',['titulo'=>'Acceder']);
         }else {
             return $this->dashboard();
-        } 
+        }
     }
-    
+
     public function validar(){
         $user = $this->request->getPost('user');
         $pass = $this->request->getPost('pass');
@@ -64,7 +66,7 @@ class Admin extends BaseController
                 return view('login',['titulo'=>'Acceder']);
             }
         }
-        
+
         if(!$user or !password_verify($pass, $user->pass) or !$user->admin){
             return view('login',['titulo'=>'Acceder']);
         }
@@ -82,10 +84,10 @@ class Admin extends BaseController
         return $this->dashboard();
 
     }
-    
+
     public function dashboard(){
         return view('admin/dashboard',['titulo'=>'Administración']);
-        
+
     }
 
     public function logout(){
@@ -93,7 +95,7 @@ class Admin extends BaseController
             $this->session->destroy();
         }
         return redirect()->to(base_url('admin'));
-        
+
     }
 
 }
