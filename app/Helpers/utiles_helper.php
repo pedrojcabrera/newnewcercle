@@ -62,7 +62,7 @@ if (!function_exists('muestra')) {
 
 if (!function_exists('uti_fecha')) {
     function uti_fecha($fecha) {
-        return Datetime::createFromFormat('Y-m-d',$fecha)->format('d/m/Y');
+        return \DateTime::createFromFormat('Y-m-d',$fecha)->format('d/m/Y');
     }
 }
 
@@ -84,9 +84,58 @@ if (!function_exists('uti_estado_evento')) {
         return $estado;
     }
 }
-    
+
 if (!function_exists('uti_quita_')) {
     function uti_quita_($string) {
         return strtolower(str_replace(' ', '', $string));
+    }
+}
+
+if (!function_exists('uti_verifica_recaptcha_v3')) {
+    function uti_verifica_recaptcha_v3(?string $token, ?string $action = null, ?float $minScore = null): bool
+    {
+        if (!$token) {
+            return false;
+        }
+
+        $secret = env('recaptchaSecretKey');
+        if (!$secret) {
+            return false;
+        }
+
+        $scoreMinimo = $minScore ?? (float) env('recaptchaMinScore', 0.5);
+
+        try {
+            $client = \Config\Services::curlrequest();
+            $httpResponse = $client->post('https://www.google.com/recaptcha/api/siteverify', [
+                'form_params' => [
+                    'secret' => $secret,
+                    'response' => $token,
+                ],
+                'timeout' => 10,
+            ]);
+            $response = $httpResponse->getBody();
+        } catch (\Throwable $e) {
+            return false;
+        }
+
+        if (!$response) {
+            return false;
+        }
+
+        $data = json_decode($response);
+        if (!$data || empty($data->success)) {
+            return false;
+        }
+
+        if ($action !== null && isset($data->action) && $data->action !== $action) {
+            return false;
+        }
+
+        if (isset($data->score) && (float) $data->score < $scoreMinimo) {
+            return false;
+        }
+
+        return true;
     }
 }

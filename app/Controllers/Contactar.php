@@ -7,6 +7,7 @@ class Contactar extends BaseController
 
     private $nombre;
     private $email;
+    private $telefono;
     private $mensaje;
 
     public function index()
@@ -19,37 +20,27 @@ class Contactar extends BaseController
 
     public function submit()
     {
-
         $recaptchaResponse = $this->request->getPost('g-recaptcha-response');
-        $response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".env("recaptchaSecretKey") . "&response=" . $recaptchaResponse);
 
-        $response = json_decode($response);
-
-        if (!$response->success) {
-            $errores[] = "Verificar reCAPTCHA";
-            // $errores[] = $response;
-            $data = [
-                'titulo'    => 'Formulario de contacto',
-                'errores' => $errores,
-            ];
-
-            return view('contactar/contactar',$data);
+        if (!uti_verifica_recaptcha_v3($recaptchaResponse, 'submit')) {
+            $errores[] = "Validación de seguridad fallida. Por favor, intenta nuevamente.";
+            return $this->renderContactarConErrores($errores);
         }
 
         $this->nombre = $this->request->getVar('nombre');
         $this->email  = $this->request->getVar('email');
         $this->telefono  = $this->request->getVar('telefono');
         $this->mensaje  = $this->request->getVar('mensaje');
-        
+
         $data = [
             'nombre'   => $this->nombre,
             'email'    => $this->email,
             'telefono' => $this->telefono,
             'mensaje'  => $this->mensaje
         ];
-        
+
         $email = \Config\Services::email();
-        
+
         $email->setFrom('noreply@cercledartfoios.com',$this->nombre,'rechazados@cercledartfoios.com');
 
         $email->clear();
@@ -84,14 +75,21 @@ class Contactar extends BaseController
         else
         {
             $errores[] = 'Hubo un error en el envío de correo'; //$email->printDebugger(['headers']);
-            $data = [
-                'titulo'    => 'Formulario de contacto',
-                'errores' => $errores,
-            ];
+            return $this->renderContactarConErrores($errores);
 
         }
-        
+
         return view('contactar/contactar',$data);
-        
+
+    }
+
+    private function renderContactarConErrores(array $errores)
+    {
+        $data = [
+            'titulo' => 'Formulario de contacto',
+            'errores' => $errores,
+        ];
+
+        return view('contactar/contactar', $data);
     }
 }

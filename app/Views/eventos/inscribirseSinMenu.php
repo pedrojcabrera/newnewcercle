@@ -62,11 +62,9 @@
             <input type="telefono" class="form-control" name="telefono" id="telefono" placeholder="Teléfono"
                 value="<?=isset($contacto) ? $contacto->telefono : ''?>" required>
         </div>
-        <div class="mb-3">
-            <div class="g-recaptcha" data-sitekey="<?=env("recaptchaSiteKey")?>">
-            </div>
-        </div>
+        <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
         <button type="submit" id="enviar" value="submit" class="btn btn-primary">Enviar</button>
+        <small class="form-text text-muted d-block mt-2">Este sitio está protegido por reCAPTCHA de Google. Se aplican la <a href="https://policies.google.com/privacy" target="_blank">Política de Privacidad</a> y los <a href="https://policies.google.com/terms" target="_blank">Términos de Servicio</a>.</small>
 
         <?=form_close()?>
 
@@ -78,6 +76,24 @@
 
 <?= $this->section('masJS')?>
 
-<script src='https://www.google.com/recaptcha/api.js' async defer></script>
+<script src="https://www.google.com/recaptcha/api.js?render=<?=env('recaptchaSiteKey')?>" async defer></script>
+<script>
+    grecaptcha.ready(function() {
+        grecaptcha.execute('<?=env("recaptchaSiteKey")?>', {action: 'inscripcion_evento'}).then(function(token) {
+            document.getElementById('g-recaptcha-response').value = token;
+        });
+    });
+
+    document.getElementById('form-Inscribirse').addEventListener('submit', function(e) {
+        var token = document.getElementById('g-recaptcha-response').value;
+        if (!token) {
+            e.preventDefault();
+            grecaptcha.execute('<?=env("recaptchaSiteKey")?>', {action: 'inscripcion_evento'}).then(function(newToken) {
+                document.getElementById('g-recaptcha-response').value = newToken;
+                document.getElementById('form-Inscribirse').submit();
+            });
+        }
+    });
+</script>
 
 <?= $this->endSection()?>
