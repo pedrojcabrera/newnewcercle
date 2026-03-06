@@ -5,7 +5,7 @@
     <div class="botones-superiores">
         <div class="boton-agregar">
             <a name="" id="" title="Crear" class="btn btn-primary btn-sm bi-person-plus"
-                href="<?php echo base_url('control/usuarios/nuevo', $_SERVER['REQUEST_SCHEME']);?>" role="button"> Nuevo
+                href="<?php echo base_url('control/usuarios/nuevo');?>" role="button"> Nuevo
                 Usuario:
                 Administrador o Galerista</a>
         </div>
@@ -41,7 +41,7 @@
                         ?>
                         <td><?php echo $usuario->id;?></td>
                         <td class="text-center">
-                            <img src=" <?php echo base_url('fotosUsuarios/' . $foto, $_SERVER['REQUEST_SCHEME']);?>"
+                            <img src=" <?php echo base_url('fotosUsuarios/' . $foto);?>"
                                 width='50' class='img-fluid rounded-circle'>
                             <br><small class="mt-0"><small class="mt-0"><?php echo $usuario->user;?></small></small>
                         </td>

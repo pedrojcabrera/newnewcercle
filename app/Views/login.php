@@ -7,7 +7,7 @@
    <div class="col-md-4">
       <div class="card">
          <div class="login-sup card-header text-center bg-success" style="--bs-bg-opacity: .3;">
-            <img src="<?=base_url('recursos/imagenes/anagrama_circular.png',$_SERVER['REQUEST_SCHEME'])?>" width="100"
+            <img src="<?=base_url('recursos/imagenes/anagrama_circular.png')?>" width="100"
                alt="">
             <h4 class="card-title mt-2 text-dark">Acceso Administrativo</h4>
          </div>

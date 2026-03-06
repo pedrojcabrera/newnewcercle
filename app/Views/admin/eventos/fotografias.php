@@ -21,7 +21,7 @@
     <?php endif; ?>
 
     <div class="container subir-fotos">
-        <form action="<?= base_url('control/fotos/' . $evento->id, $_SERVER['REQUEST_SCHEME']) ?>" method="post"
+        <form action="<?= base_url('control/fotos/' . $evento->id) ?>" method="post"
             enctype="multipart/form-data">
             <div class="form-group">
                 <input class="form-control" type="file" name="images[]" id="archivoInput" multiple>
@@ -34,7 +34,7 @@
 </div>
 <div class="btn-regresar">
     <a class="btn btn-success btn-sm bi-card-list"
-        href="<?= base_url('control/eventos', $_SERVER['REQUEST_SCHEME']) ?>"> Regresar a la lista de Eventos</a>
+        href="<?= base_url('control/eventos') ?>"> Regresar a la lista de Eventos</a>
 </div>
 <div class="container contenedor-4">
     <!-- Modal -->
@@ -46,10 +46,10 @@
     <?php foreach ($fotos as $foto): ?>
     <div class="card item-0 item-4">
         <figure>
-            <img src="<?= base_url('imgEventos/ev_' . $evento->id . "/" . $foto, $_SERVER['REQUEST_SCHEME']) ?>" alt="">
+            <img src="<?= base_url('imgEventos/ev_' . $evento->id . "/" . $foto) ?>" alt="">
             <hr>
             <figcaption>
-                <a href="<?= base_url('control/fotos/' . $evento->id . '/' . $foto, $_SERVER['REQUEST_SCHEME']) ?>"
+                <a href="<?= base_url('control/fotos/' . $evento->id . '/' . $foto) ?>"
                     class="btn btn-danger btn-sm bi-trash3" onclick="return confirm('¿ Confirma el borrado ?');"> Quitar
                     Foto</a>
             </figcaption>

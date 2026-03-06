@@ -41,7 +41,7 @@ class Tipos extends BaseController
         ];
         
         if(!$this->validate($reglas)) {
-            return redirect()->to(base_url('control/tipos/nuevo', $_SERVER['REQUEST_SCHEME']))->withInput();
+            return redirect()->to(base_url('control/tipos/nuevo'))->withInput();
         }
 
         $post = $this->request->getPost();
@@ -51,7 +51,7 @@ class Tipos extends BaseController
             'eventotipo'    => $post['eventotipo'],
         ]);
 
-        return redirect()->to(base_url('control/tipos', $_SERVER['REQUEST_SCHEME']));
+        return redirect()->to(base_url('control/tipos'));
     }
 
     public function edit($id = null){
@@ -71,7 +71,7 @@ class Tipos extends BaseController
         ];
 
         if(!$this->validate($reglas)) {
-            return redirect()->to(base_url('control/tipos/editar/'.$id, $_SERVER['REQUEST_SCHEME']))->withInput();
+            return redirect()->to(base_url('control/tipos/editar/'.$id))->withInput();
         }
 
         $post = $this->request->getPost();
@@ -84,11 +84,11 @@ class Tipos extends BaseController
         
         $this->model->save($datos);
 
-        return redirect()->to(base_url('control/tipos', $_SERVER['REQUEST_SCHEME']));
+        return redirect()->to(base_url('control/tipos'));
     }
 
     public function delete($id = null){
         $this->model->delete($id);
-        return redirect()->to(base_url('control/tipos', $_SERVER['REQUEST_SCHEME']));
+        return redirect()->to(base_url('control/tipos'));
     }
 }

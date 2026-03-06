@@ -78,7 +78,7 @@
 
     <div class="mt-3 text-end">
         <a name="cancelar" id="cancelar" class="btn btn-success btn-md bi-box-arrow-left"
-            href="<?=base_url('control/eventos', $_SERVER['REQUEST_SCHEME'])?>" role="button" title="Cancelar">
+            href="<?=base_url('control/eventos')?>" role="button" title="Cancelar">
             Volver</a>
     </div>
 

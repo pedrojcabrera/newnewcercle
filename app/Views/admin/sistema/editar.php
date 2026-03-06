@@ -1,7 +1,7 @@
 <?php echo $this->extend('admin/plantillas/layout'); ?>
 <?php echo $this->section('contenido'); ?>
 
-<form action="<?php echo base_url('control/sistema/modificar', $_SERVER['REQUEST_SCHEME']); ?>" method="POST"
+<form action="<?php echo base_url('control/sistema/modificar'); ?>" method="POST"
     enctype="multipart/form-data">
     <input type="hidden" name="_method" value="PUT">
     <?php echo csrf_field(); ?>
@@ -12,7 +12,7 @@
             <div class="mb-3">
                 <div class="text-center">
                     <?php if (file_exists('recursos/imagenes/' . $banner)): ?>
-                    <img src="<?php echo base_url('recursos/imagenes/' . $banner, $_SERVER['REQUEST_SCHEME']); ?>"
+                    <img src="<?php echo base_url('recursos/imagenes/' . $banner); ?>"
                         class="img-fluid">
                     <?php endif; ?>
                 </div>
@@ -85,7 +85,7 @@
 
             <div class="d-flex justify-content-between mx-3 mt-3">
                 <a name="cancelar" id="cancelar" class="btn btn-success btn-md bi-box-arrow-left"
-                    href="<?php echo base_url('dashboard', $_SERVER['REQUEST_SCHEME']); ?>" role="button"
+                    href="<?php echo base_url('dashboard'); ?>" role="button"
                     title="Cancelar"> Cancelar</a>
                 <button type="submit" class="btn btn-primary btn-md bi-person-check-fill" title="Modificar">
                     Modificar</button>

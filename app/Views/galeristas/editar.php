@@ -6,7 +6,7 @@
    dd($router->controllerName(),$router->methodName());
 */
 ?>
-<form action="<?php echo base_url('galeristas/modificar/' . $obra->id, $_SERVER['REQUEST_SCHEME']) ?>" method="post"
+<form action="<?php echo base_url('galeristas/modificar/' . $obra->id) ?>" method="post"
     enctype="multipart/form-data">
     <h4 style="text-align: center; margin-top: .5rem;"><?php echo $usuario->nombre ?></h4>
 
@@ -93,7 +93,7 @@
         </div>
     </div>
     <div class="mt-3 text-end" style="margin-right: 1rem;">
-        <a href="<?php echo base_url('galeristas/cancelar', $_SERVER['REQUEST_SCHEME']) ?>"
+        <a href="<?php echo base_url('galeristas/cancelar') ?>"
             class="btn btn-success btn-sm bi-box-arrow-left" name="btn_cancelar" title="Cancelar"> Cancelar</a>
         <button type="submit" class="btn btn-primary btn-sm bi-check-lg" name="btn_grabar" title="Guardar cambios">
             Grabar</button>

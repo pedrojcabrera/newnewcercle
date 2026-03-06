@@ -4,7 +4,7 @@
    <img src="<?= base_url('recursos/imagenes/anagramaColor.png') ?>" alt="">
    <?php if(isset($hayLogout)): ?>
    <a class="btn btn-success btn-sm bi-door-open" title="Logout / Salir"
-      href="<?=base_url('galeristas/logout',$_SERVER['REQUEST_SCHEME'])?>">
+      href="<?=base_url('galeristas/logout')?>">
       Logout / Salir</a>
    <?php endif ?>
    </li>

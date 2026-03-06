@@ -28,7 +28,7 @@
     </div>
 
     <div class="heroe">
-        <img src="<?= base_url('recursos/imagenes/anagramaColor.png',$_SERVER['REQUEST_SCHEME'])?>" alt="">
+        <img src="<?= base_url('recursos/imagenes/anagramaColor.png')?>" alt="">
     </div>
 
 </header>

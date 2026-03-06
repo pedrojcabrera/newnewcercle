@@ -9,7 +9,7 @@
         </div>
         <div class="boton-cancelar">
             <a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left"
-                href="<?= base_url('control/contactos', $_SERVER['REQUEST_SCHEME']); ?>" role="button" title="Cancelar">
+                href="<?= base_url('control/contactos'); ?>" role="button" title="Cancelar">
                 Cancelar</a>
         </div>
     </div>

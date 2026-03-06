@@ -4,10 +4,10 @@
 <div class="container">
 	<div class="d-flex justify-content-between mb-3">
 		<a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left"
-			href="<?=base_url('control/eventos', $_SERVER['REQUEST_SCHEME'])?>" role="button" title="Cancelar">
+			href="<?=base_url('control/eventos')?>" role="button" title="Cancelar">
 			Volver</a>
 		<a name="listar" id="listar" class="btn btn-primary btn-sm bi-filetype-pdf"
-			href="<?=base_url('control/listarInscritos/'.$evento->id, $_SERVER['REQUEST_SCHEME'])?>" role="button"
+			href="<?=base_url('control/listarInscritos/'.$evento->id)?>" role="button"
 			title="Generar pdf" target="_blank"> Imprimir PDF</a>
 	</div>
 	<div class="card-body">
@@ -64,10 +64,10 @@
 		</div>
 		<div class="d-flex justify-content-between mx-3 mt-3">
 			<a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left"
-				href="<?=base_url('control/eventos', $_SERVER['REQUEST_SCHEME'])?>" role="button" title="Cancelar">
+				href="<?=base_url('control/eventos')?>" role="button" title="Cancelar">
 				Volver</a>
 			<a name="listar" id="listar" class="btn btn-primary btn-sm bi-filetype-pdf"
-				href="<?=base_url('control/listarInscritos/'.$evento->id, $_SERVER['REQUEST_SCHEME'])?>" role="button"
+				href="<?=base_url('control/listarInscritos/'.$evento->id)?>" role="button"
 				title="Generar pdf" target="_blank"> Imprimir PDF</a>
 		</div>
 	</div>

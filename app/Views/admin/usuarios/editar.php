@@ -4,7 +4,7 @@
 <div class="row my-3 mx-3">
     <div class="col-sm-6 mb-3 mb-sm-0">
         <div class="container">
-            <form action="<?php echo base_url('control/usuarios/modificar/' . $id, $_SERVER['REQUEST_SCHEME']); ?>"
+            <form action="<?php echo base_url('control/usuarios/modificar/' . $id); ?>"
                 method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="_method" value="PUT">
                 <?php echo csrf_field(); ?>
@@ -122,7 +122,7 @@
         </div>
         <div class="d-flex justify-content-between mx-3 mt-3">
             <a name="cancelar" id="cancelar" class="btn btn-success btn-md bi-box-arrow-left"
-                href="<?php echo base_url('control/usuarios', $_SERVER['REQUEST_SCHEME']); ?>" role="button"
+                href="<?php echo base_url('control/usuarios'); ?>" role="button"
                 title="Cancelar"> Cancelar</a>
             <button type="submit" class="btn btn-primary btn-md bi-person-check-fill" title="Modificar">
                 Modificar</button>

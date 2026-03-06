@@ -31,7 +31,7 @@
       </div>
       <?php endif; ?>
 
-      <?=form_open(base_url("/contactar/enviar",$_SERVER['REQUEST_SCHEME']),['id="form-Contactar"'])?>
+      <?=form_open(base_url("/contactar/enviar"),['id="form-Contactar"'])?>
 
       <div class="mb-3">
          <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Nombre" required>

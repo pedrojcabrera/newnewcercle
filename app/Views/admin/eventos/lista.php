@@ -4,12 +4,12 @@
     <div class="botones-superiores">
         <div class="boton-agregar">
             <a name="" id="" title="Crear" class="btn btn-primary btn-sm bi-person-plus"
-                href="<?= base_url('control/eventos/nuevo', $_SERVER['REQUEST_SCHEME']); ?>" role="button">
+                href="<?= base_url('control/eventos/nuevo'); ?>" role="button">
                 Nuevo Evento</a>
         </div>
         <div class="boton-cancelar">
             <a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left"
-                href="<?php echo base_url('dashboard', $_SERVER['REQUEST_SCHEME']);?>" role="button" title="Cancelar">
+                href="<?php echo base_url('dashboard');?>" role="button" title="Cancelar">
                 Cancelar</a>
         </div>
     </div>
@@ -74,10 +74,10 @@
 
                             <?php if ($evento->inscripcion || ($evento->inscripcion_invitacion && ($evento->alumno or $evento->amigo or $evento->pdalumno or $evento->pintor or $evento->socio or $evento->dtaller))) : ?>
                             <a title="Lista de Inscritos" class="btn btn-primary btn-sm bi-card-checklist mi-boton"
-                                href="<?php echo base_url('control/inscritos/' . $evento->id, $_SERVER['REQUEST_SCHEME']); ?>">
+                                href="<?php echo base_url('control/inscritos/' . $evento->id); ?>">
                                 Inscritos</a>
                             <a title="Lista de Espera" class="btn btn-warning btn-sm bi-hourglass mi-boton"
-                                href="<?php echo base_url('control/enEspera/' . $evento->id, $_SERVER['REQUEST_SCHEME']); ?>">
+                                href="<?php echo base_url('control/enEspera/' . $evento->id); ?>">
                                 En Espera</a>
                             <?php endif; ?>
 
@@ -86,7 +86,7 @@
                             <?php if(!$evento->evento_cerrado): ?>
                             <?php if (strtotime($hoy) >= strtotime($evento->desde_inscripcion) and strtotime($hoy) <= strtotime($evento->hasta_inscripcion)): ?>
                             <a title="Inscripción manual" class="btn btn-primary btn-sm bi-person-plus mi-boton"
-                                href="<?php echo base_url('control/inscripcionManual', $_SERVER['REQUEST_SCHEME']); ?>">
+                                href="<?php echo base_url('control/inscripcionManual'); ?>">
                                 Inscribir</a>
                             <?php endif; ?>
                             <?php endif; ?>

@@ -45,7 +45,7 @@ class Sistema extends BaseController
         ];
 
         if(!$this->validate($reglas)) {
-            return redirect()->to(base_url('control/sistema', $_SERVER['REQUEST_SCHEME']))->withInput();
+            return redirect()->to(base_url('control/sistema'))->withInput();
         }
 
         $post = $this->request->getPost();
@@ -83,7 +83,7 @@ class Sistema extends BaseController
             $this->_upload($imagen,$destino,$banner);
         }
 
-        return redirect()->to(base_url('control/sistema', $_SERVER['REQUEST_SCHEME']));
+        return redirect()->to(base_url('control/sistema'));
     }
 
     private function _upload($imagen,$destino,$banner) {

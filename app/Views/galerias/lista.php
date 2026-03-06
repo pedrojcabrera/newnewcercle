@@ -15,8 +15,8 @@
    ?>
 
    <figure>
-      <a href="<?php echo base_url('pinturas/' . $user, $_SERVER['REQUEST_SCHEME'])?>">
-         <img src=" <?php echo base_url('fotosUsuarios/' . $foto, $_SERVER['REQUEST_SCHEME'])?>"
+      <a href="<?php echo base_url('pinturas/' . $user)?>">
+         <img src=" <?php echo base_url('fotosUsuarios/' . $foto)?>"
             title="Ver la exposición de <?php echo $nombres[$user]?>" alt="">
       </a>
 

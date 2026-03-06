@@ -42,7 +42,7 @@
       <a href="/eventos/<?=$evento->id?>">
          <figure class="col_evento">
             <?php $cartel = file_exists('imgEventos/ev_'.$evento->id.'/cartel.jpg') ? 'imgEventos/ev_'.$evento->id.'/cartel.jpg' : 'imgEventos/eventos.jpg'?>
-            <img src="<?=base_url($cartel,$_SERVER['REQUEST_SCHEME'])?>" alt="">
+            <img src="<?=base_url($cartel)?>" alt="">
             <figcaption>
                <h6><?=strtoupper($evento->titulo)?></h6>
                <p>Desde el <?=uti_fecha($evento->desde)?> hasta el <?=uti_fecha($evento->hasta)?></p>

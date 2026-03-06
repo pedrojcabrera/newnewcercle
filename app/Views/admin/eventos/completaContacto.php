@@ -8,7 +8,7 @@
 </div>
 <div class="container col-4 mx-auto">
 	<div class="card-header fs-5">Marcar los grupos de pertenencia</div>
-	<form action="<?=base_url('control/contactoDesdeInscrito', $_SERVER['REQUEST_SCHEME'])?>" method="post">
+	<form action="<?=base_url('control/contactoDesdeInscrito')?>" method="post">
 		<div class="card-body">
 			<div class="form-check">
 				<input class="form-check-input" name="socio" type="checkbox" id="socio">
@@ -48,7 +48,7 @@
 			</div>
 		</div>
 		<div class="card-footer text-center mt-3">
-			<a href="<?=base_url('control/inscritos/'.$inscrito->id_evento, $_SERVER['REQUEST_SCHEME'])?>" type="button"
+			<a href="<?=base_url('control/inscritos/'.$inscrito->id_evento)?>" type="button"
 				title="Regresar" class="btn btn-md btn-success bi-box-arrow-left"> Cancelar</a>
 			<button type="submit" class="btn btn-primary btn-md bi-send" title="Crear Contacto"> Crear Contacto</button>
 		</div>

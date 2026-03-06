@@ -41,7 +41,7 @@
         <?php foreach($eventos as $evento): ?>
         <a href="/eventos/<?=$evento->id?>" class="item-0 item-4">
             <?php $cartel = file_exists('imgEventos/ev_'.$evento->id.'/cartel.jpg') ? 'imgEventos/ev_'.$evento->id.'/cartel.jpg' : 'imgEventos/eventos.jpg'?>
-            <img src="<?=base_url($cartel,$_SERVER['REQUEST_SCHEME']).'?v='.filemtime($cartel)?>" alt="">
+            <img src="<?=base_url($cartel).'?v='.filemtime($cartel)?>" alt="">
             <h6 class="evento-titulo-4"><?=strtoupper($evento->titulo)?></h6>
             <p class="desde-hasta-4">Desde el <?=uti_fecha($evento->desde)?> hasta el <?=uti_fecha($evento->hasta)?></p>
             <p class="estado-4 <?= uti_quita_(uti_estado_evento($evento->desde,$evento->hasta))?>">

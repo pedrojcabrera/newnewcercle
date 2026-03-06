@@ -3,7 +3,7 @@
     <h5><?php echo $titulo; ?></h5>
     <img src="<?php echo base_url('recursos/imagenes/anagramaColor.png'); ?>" alt="">
     <a class="btn btn-success btn-sm bi-door-open" title="Ir al Menú"
-        href="<?php echo base_url('dashboard', $_SERVER['REQUEST_SCHEME']); ?>"> Menú</a>
+        href="<?php echo base_url('dashboard'); ?>"> Menú</a>
     </li>
     </a>
 

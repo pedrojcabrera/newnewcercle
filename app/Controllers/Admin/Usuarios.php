@@ -45,7 +45,7 @@ class Usuarios extends BaseController
         ];
         if(!$this->validate($reglas)) {
             dd($this->validator->listErrors());
-            return redirect()->to(base_url('control/usuarios/nuevo', $_SERVER['REQUEST_SCHEME']))->withInput();
+            return redirect()->to(base_url('control/usuarios/nuevo'))->withInput();
         }
         $post = $this->request->getPost();
 
@@ -64,7 +64,7 @@ class Usuarios extends BaseController
         $id = $this->model->getInsertID();
         $this->_upload($id);
         
-        return redirect()->to(base_url('control/usuarios', $_SERVER['REQUEST_SCHEME']));
+        return redirect()->to(base_url('control/usuarios'));
     }
 
     public function edit($id = null){
@@ -132,7 +132,7 @@ class Usuarios extends BaseController
             $this->_upload($id);
         }
         return $this->lista();
-        //return redirect()->to(base_url('control/usuarios', $_SERVER['REQUEST_SCHEME']));
+        //return redirect()->to(base_url('control/usuarios'));
     }
 
     public function delete($id = null){

@@ -7,7 +7,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <link rel="icon" type="image/x-icon" href="<?= base_url('favicon.ico', $_SERVER['REQUEST_SCHEME']);?>">
+        <link rel="icon" type="image/x-icon" href="<?= base_url('favicon.ico');?>">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Lexend+Giga:wght@100..900&
@@ -18,9 +18,9 @@
             integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
         <link rel="stylesheet" type="text/css"
-            href="<?=base_url('recursos/DataTables/datatables.min.css',$_SERVER['REQUEST_SCHEME'])?>">
+            href="<?=base_url('recursos/DataTables/datatables.min.css')?>">
         <link rel="stylesheet" type="text/css"
-            href="<?=base_url('recursos/styleGaleristas.css',$_SERVER['REQUEST_SCHEME'])?>">
+            href="<?=base_url('recursos/styleGaleristas.css')?>">
         <!-- CK.Editor -->
         <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 

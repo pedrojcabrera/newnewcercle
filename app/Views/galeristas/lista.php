@@ -16,13 +16,13 @@
    }
    ?>
    <figure>
-      <img src="<?=base_url('fotosUsuarios/'.$foto,$_SERVER['REQUEST_SCHEME'])?>" alt="">
+      <img src="<?=base_url('fotosUsuarios/'.$foto)?>" alt="">
 
       <figcaption>
          <?= $data->nombre?>
       </figcaption>
       <a class="boton-nuevo btn btn-primary btn-sm bi-easel"
-         href="<?=base_url('galeristas/nuevo',$_SERVER['REQUEST_SCHEME'])?>"> Nueva
+         href="<?=base_url('galeristas/nuevo')?>"> Nueva
          Obra</a>
    </figure>
 </div>
@@ -30,7 +30,7 @@
    <?php foreach ($obras as $obra): ?>
 
    <div class=" card tarjeta_cuadro" style="width: 18rem;">
-      <img src="<?=base_url('galerias/'.$obra->id_user.'/'.$obra->id.'.jpg',$_SERVER['REQUEST_SCHEME'])?>"
+      <img src="<?=base_url('galerias/'.$obra->id_user.'/'.$obra->id.'.jpg')?>"
          class="card-img-top" alt="">
       <div class="card-body cuerpo-tarjeta">
          <h5 class="card-title">

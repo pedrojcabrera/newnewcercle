@@ -7,12 +7,12 @@
     <div class="botones-superiores">
         <div class="boton-agregar">
             <a name="" id="" title="Crear" class="btn btn-primary btn-sm bi-person-plus"
-                href="<?php echo base_url('control/contactos/nuevo', $_SERVER['REQUEST_SCHEME']); ?>" role="button">
+                href="<?php echo base_url('control/contactos/nuevo'); ?>" role="button">
                 Nuevo Contacto</a>
         </div>
         <div class="boton-cancelar">
             <a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left"
-                href="<?php echo base_url('dashboard', $_SERVER['REQUEST_SCHEME']); ?>" role="button" title="Cancelar">
+                href="<?php echo base_url('dashboard'); ?>" role="button" title="Cancelar">
                 Cancelar</a>
         </div>
     </div>
@@ -46,7 +46,7 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ajax: {
-            url: '<?php echo base_url('control/contactos/ajax', $_SERVER['REQUEST_SCHEME']); ?>',
+            url: '<?php echo base_url('control/contactos/ajax'); ?>',
             type: 'GET',
             error: function(xhr, error, code) {
                 console.error('Error al cargar datos:', error);

@@ -16,9 +16,9 @@
                crossorigin="anonymous">
            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
            <link rel="stylesheet" type="text/css"
-               href="<?php echo base_url('recursos/DataTables/datatables.min.css', $_SERVER['REQUEST_SCHEME']); ?>">
+               href="<?php echo base_url('recursos/DataTables/datatables.min.css'); ?>">
            <link rel="stylesheet" type="text/css"
-               href="<?php echo base_url('recursos/styleMenu.css', $_SERVER['REQUEST_SCHEME']); ?>">
+               href="<?php echo base_url('recursos/styleMenu.css'); ?>">
            <!-- CK.Editor -->
            <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
            <?php echo
@@ -44,41 +44,41 @@
                </div>
                <div class="gallery">
                    <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/usuarios', $_SERVER['REQUEST_SCHEME']); ?>">Usuarios</a>
+                       href="<?php echo base_url('control/usuarios'); ?>">Usuarios</a>
                    <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/sistema', $_SERVER['REQUEST_SCHEME']); ?>">Sistema</a>
+                       href="<?php echo base_url('control/sistema'); ?>">Sistema</a>
 
                    <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/enlaces', $_SERVER['REQUEST_SCHEME']); ?>">Enlaces</a>
+                       href="<?php echo base_url('control/enlaces'); ?>">Enlaces</a>
 
                    <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/contactos', $_SERVER['REQUEST_SCHEME']); ?>">Contactos</a>
+                       href="<?php echo base_url('control/contactos'); ?>">Contactos</a>
                    <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/correos', $_SERVER['REQUEST_SCHEME']); ?>">Correos
+                       href="<?php echo base_url('control/correos'); ?>">Correos
                        Genéricos</a>
 
                    <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/tipos', $_SERVER['REQUEST_SCHEME']); ?>">Tipos
+                       href="<?php echo base_url('control/tipos'); ?>">Tipos
                        de
                        Evento</a>
                    <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/eventos', $_SERVER['REQUEST_SCHEME']); ?>">Eventos</a>
+                       href="<?php echo base_url('control/eventos'); ?>">Eventos</a>
                    <!-- 
                    <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/emailsIns', $_SERVER['REQUEST_SCHEME']); ?>">Listas
+                       href="<?php echo base_url('control/emailsIns'); ?>">Listas
                        <br>de<br>Espera
                    </a>
  -->
                    <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/inscripcionManual', $_SERVER['REQUEST_SCHEME']); ?>">Inscripción
+                       href="<?php echo base_url('control/inscripcionManual'); ?>">Inscripción
                        manual a
                        un evento</a>
                    <!-- <a class="gallery-item elemento"
-               href="<?php echo base_url('control/galerias', $_SERVER['REQUEST_SCHEME']); ?>">Galerías</a> -->
+               href="<?php echo base_url('control/galerias'); ?>">Galerías</a> -->
                </div>
                <div class="gallery">
                    <a class="elemento salir bi-door-open" title="Cerrar sesión"
-                       href="<?php echo base_url('logout', $_SERVER['REQUEST_SCHEME']); ?>">
+                       href="<?php echo base_url('logout'); ?>">
                        Salir</a>
                </div>
            </div>

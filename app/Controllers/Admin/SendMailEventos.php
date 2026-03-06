@@ -63,7 +63,7 @@ class Eventos extends BaseController
 
 		$plantilla = file_get_contents('recursos/plantillasmail/cabeceraMail.php');
 		$plantilla .= $evento->texto_carta;
-		$plantilla .= "<br><p></p>Puede inscribirse clicando <a href='" . base_url('inscribirse/'.$id.'/idcontacto', $_SERVER['REQUEST_SCHEME']) . "' class='boton_email_inscribirse'>aquí</a></><br>";
+		$plantilla .= "<br><p></p>Puede inscribirse clicando <a href='" . base_url('inscribirse/'.$id.'/idcontacto') . "' class='boton_email_inscribirse'>aquí</a></><br>";
 		$plantilla .= file_get_contents('recursos/plantillasmail/pieMail.php');
 
 		$condiciones = [];
@@ -139,9 +139,9 @@ class Eventos extends BaseController
 			$cuerpo = str_replace('{{poblacion}}', $contacto->poblacion, $cuerpo);
 			$cuerpo = str_replace('{{provincia}}', $contacto->provincia, $cuerpo);
 
-			$cuerpo = str_replace('{{baja_emails}}', base_url('bajasxpiecorreo/emails/' . $contacto->id, $_SERVER['REQUEST_SCHEME']), $cuerpo);
-			$cuerpo = str_replace('{{baja_invitaciones}}', base_url('bajasxpiecorreo/invitaciones/' . $contacto->id, $_SERVER['REQUEST_SCHEME']), $cuerpo);
-			$cuerpo = str_replace('{{baja_total}}', base_url('bajasxpiecorreo/total/' . $contacto->id, $_SERVER['REQUEST_SCHEME']), $cuerpo);
+			$cuerpo = str_replace('{{baja_emails}}', base_url('bajasxpiecorreo/emails/' . $contacto->id), $cuerpo);
+			$cuerpo = str_replace('{{baja_invitaciones}}', base_url('bajasxpiecorreo/invitaciones/' . $contacto->id), $cuerpo);
+			$cuerpo = str_replace('{{baja_total}}', base_url('bajasxpiecorreo/total/' . $contacto->id), $cuerpo);
 
 			$email->setMessage($cuerpo);
 

@@ -40,7 +40,7 @@
             </div>
         </div>
         <?php endif; ?>
-        <?php echo form_open(base_url("control/inscripcionManual", $_SERVER['REQUEST_SCHEME']), ['id' => 'form-Inscribirse', 'method' => 'post']); ?>
+        <?php echo form_open(base_url("control/inscripcionManual"), ['id' => 'form-Inscribirse', 'method' => 'post']); ?>
         <?php echo csrf_field(); ?>
 
         <div id="titulo">
@@ -100,7 +100,7 @@
             </div>
             <div class="boton-cancelar">
                 <a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left"
-                    href="<?= base_url(isset($contacto)?'control/contactos':'dashboard', $_SERVER['REQUEST_SCHEME']) ?>"
+                    href="<?= base_url(isset($contacto)?'control/contactos':'dashboard') ?>"
                     role="button" title="Cancelar">
                     Cancelar</a>
             </div>

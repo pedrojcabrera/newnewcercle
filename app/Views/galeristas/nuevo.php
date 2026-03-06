@@ -6,7 +6,7 @@
    dd($router->controllerName(),$router->methodName());
 */
 ?>
-<form action="<?=base_url('galeristas/crear', $_SERVER['REQUEST_SCHEME'])?>" method="post"
+<form action="<?=base_url('galeristas/crear')?>" method="post"
    enctype="multipart/form-data">
    <h4 style="text-align: center; margin-top: .5rem;"><?= $usuario->nombre ?></h4>
    <div class="card" style="margin-left: 1rem; margin-right: 1rem;">
@@ -89,7 +89,7 @@
       </div>
    </div>
    <div class="mt-3 text-end" style="margin-right: 1rem;">
-      <a href="<?=base_url('galeristas/cancelar', $_SERVER['REQUEST_SCHEME'])?>"
+      <a href="<?=base_url('galeristas/cancelar')?>"
          class="btn btn-success btn-sm bi-box-arrow-left" name="btn_cancelar" title="Cancelar"> Cancelar</a>
       <input type="hidden" name="txtID" value="<?= $usuario->id ?>">
       <button type="submit" class="btn btn-primary btn-sm bi-check-lg" name="btn_grabar" title="Grabar Obra">

@@ -5,12 +5,12 @@
    <div class="botones-superiores">
       <div class="boton-agregar">
          <a name="" id="" title="Crear" class="btn btn-primary btn-sm bi-person-plus"
-            href="<?php echo base_url('control/tipos/nuevo', $_SERVER['REQUEST_SCHEME']);?>" role="button">
+            href="<?php echo base_url('control/tipos/nuevo');?>" role="button">
             Nuevo Tipo de Evento</a>
       </div>
       <div class="boton-cancelar">
          <a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left"
-            href="<?php echo base_url('dashboard', $_SERVER['REQUEST_SCHEME']); ?>" role="button"
+            href="<?php echo base_url('dashboard'); ?>" role="button"
             title="Cancelar"> Cancelar</a>
       </div>
    </div>

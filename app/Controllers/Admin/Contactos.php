@@ -135,7 +135,7 @@ class Contactos extends BaseController
         ];
 
         if(!$this->validate($reglas)) {
-            return redirect()->to(base_url('control/contactos/nuevo', $_SERVER['REQUEST_SCHEME']))->withInput();
+            return redirect()->to(base_url('control/contactos/nuevo'))->withInput();
         }
 
         $post = $this->request->getPost();
@@ -169,7 +169,7 @@ class Contactos extends BaseController
             'amigo'         => $amigo,
         ]);
 
-        return redirect()->to(base_url('control/contactos', $_SERVER['REQUEST_SCHEME']));
+        return redirect()->to(base_url('control/contactos'));
     }
 
     public function edit($id = null){
@@ -191,7 +191,7 @@ class Contactos extends BaseController
         ];
 
         if(!$this->validate($reglas)) {
-            return redirect()->to(base_url('control/contactos/editar/'.$id, $_SERVER['REQUEST_SCHEME']))->withInput();
+            return redirect()->to(base_url('control/contactos/editar/'.$id))->withInput();
         }
 
         $post = $this->request->getPost();
@@ -228,12 +228,12 @@ class Contactos extends BaseController
 
         $this->model->save($datos);
 
-        return redirect()->to(base_url('control/contactos', $_SERVER['REQUEST_SCHEME']));
+        return redirect()->to(base_url('control/contactos'));
     }
 
     public function delete($id = null){
         $this->model->delete($id);
-        return redirect()->to(base_url('control/contactos', $_SERVER['REQUEST_SCHEME']));
+        return redirect()->to(base_url('control/contactos'));
     }
 
     public function historia($id = null) {

@@ -41,7 +41,7 @@ class Enlaces extends BaseController
         ];
         
         if(!$this->validate($reglas)) {
-            return redirect()->to(base_url('control/enlaces/nuevo', $_SERVER['REQUEST_SCHEME']))->withInput();
+            return redirect()->to(base_url('control/enlaces/nuevo'))->withInput();
         }
 
         $post = $this->request->getPost();
@@ -51,7 +51,7 @@ class Enlaces extends BaseController
             'enlace'    => $post['enlace'],
         ]);
 
-        return redirect()->to(base_url('control/enlaces', $_SERVER['REQUEST_SCHEME']));
+        return redirect()->to(base_url('control/enlaces'));
     }
 
     public function edit($id = null){
@@ -71,7 +71,7 @@ class Enlaces extends BaseController
         ];
 
         if(!$this->validate($reglas)) {
-            return redirect()->to(base_url('control/enlaces/editar/'.$id, $_SERVER['REQUEST_SCHEME']))->withInput();
+            return redirect()->to(base_url('control/enlaces/editar/'.$id))->withInput();
         }
 
         $post = $this->request->getPost();
@@ -84,11 +84,11 @@ class Enlaces extends BaseController
         
         $this->model->save($datos);
 
-        return redirect()->to(base_url('control/enlaces', $_SERVER['REQUEST_SCHEME']));
+        return redirect()->to(base_url('control/enlaces'));
     }
 
     public function delete($id = null){
         $this->model->delete($id);
-        return redirect()->to(base_url('control/enlaces', $_SERVER['REQUEST_SCHEME']));
+        return redirect()->to(base_url('control/enlaces'));
     }
 }

@@ -188,7 +188,7 @@ class Eventos extends BaseController
       $this->_upload($subido, $camino, $destino);
     }
 
-    return redirect()->to(base_url('control/eventos', $_SERVER['REQUEST_SCHEME']));
+    return redirect()->to(base_url('control/eventos'));
   }
 
   public function edit($id = null)
@@ -337,13 +337,13 @@ class Eventos extends BaseController
 
     $this->model->save($data);
 
-    return redirect()->to(base_url('control/eventos', $_SERVER['REQUEST_SCHEME']));
+    return redirect()->to(base_url('control/eventos'));
   }
 
   public function delete($id = null)
   {
     $this->model->delete($id);
-    return redirect()->to(base_url('control/eventos', $_SERVER['REQUEST_SCHEME']));
+    return redirect()->to(base_url('control/eventos'));
   }
 
   private function _upload($origen, $camino, $destino)
@@ -360,7 +360,7 @@ class Eventos extends BaseController
     $session->setFlashdata('mensaje', 'Envío de invitaciones a ' . $id);
 
     if (! $id) {
-      return redirect()->to(base_url('control/eventos', $_SERVER['REQUEST_SCHEME']));
+      return redirect()->to(base_url('control/eventos'));
     }
 
     // Modificar valores
@@ -390,7 +390,7 @@ class Eventos extends BaseController
 
     $plantilla = file_get_contents('recursos/plantillasmail/cabeceraMail.php');
     $plantilla .= $evento->texto_carta;
-    $plantilla .= "<br><p></p>Puede inscribirse clicando <a href='" . base_url('inscribirse/' . $id . '/idcontacto', $_SERVER['REQUEST_SCHEME']) . "' class='boton_email_inscribirse'>aquí</a></><br>";
+    $plantilla .= "<br><p></p>Puede inscribirse clicando <a href='" . base_url('inscribirse/' . $id . '/idcontacto') . "' class='boton_email_inscribirse'>aquí</a></><br>";
 
     $plantilla .= file_get_contents('recursos/plantillasmail/pieMail.php');
 
@@ -468,9 +468,9 @@ class Eventos extends BaseController
       $cuerpo = str_replace('{{poblacion}}', $contacto->poblacion, $cuerpo);
       $cuerpo = str_replace('{{provincia}}', $contacto->provincia, $cuerpo);
 
-      $cuerpo = str_replace('{{baja_emails}}', base_url('bajasxpiecorreo/emails/' . $contacto->id, $_SERVER['REQUEST_SCHEME']), $cuerpo);
-      $cuerpo = str_replace('{{baja_invitaciones}}', base_url('bajasxpiecorreo/invitaciones/' . $contacto->id, $_SERVER['REQUEST_SCHEME']), $cuerpo);
-      $cuerpo = str_replace('{{baja_total}}', base_url('bajasxpiecorreo/total/' . $contacto->id, $_SERVER['REQUEST_SCHEME']), $cuerpo);
+      $cuerpo = str_replace('{{baja_emails}}', base_url('bajasxpiecorreo/emails/' . $contacto->id), $cuerpo);
+      $cuerpo = str_replace('{{baja_invitaciones}}', base_url('bajasxpiecorreo/invitaciones/' . $contacto->id), $cuerpo);
+      $cuerpo = str_replace('{{baja_total}}', base_url('bajasxpiecorreo/total/' . $contacto->id), $cuerpo);
 
       $email->setMessage($cuerpo);
 
@@ -617,7 +617,7 @@ class Eventos extends BaseController
 
     return view('admin/eventos/listaInscritos', $data);
 
-    //return redirect()->to(base_url('control/contactos/editar/'.$id_contacto, $_SERVER['REQUEST_SCHEME']));
+    //return redirect()->to(base_url('control/contactos/editar/'.$id_contacto));
 
   }
 

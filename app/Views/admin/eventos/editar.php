@@ -9,7 +9,7 @@
     ?>
 </div>
 
-<form action="<?php echo base_url('control/eventos/modificar/' . $id, $_SERVER['REQUEST_SCHEME']); ?>" method="post"
+<form action="<?php echo base_url('control/eventos/modificar/' . $id); ?>" method="post"
     enctype="multipart/form-data">
     <input type="hidden" name="_method" value="PUT">
     <?php echo csrf_field(); ?>
@@ -276,7 +276,7 @@
                 </div>
                 <div class="d-flex justify-content-between mt-3">
                     <a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left"
-                        href="<?php echo base_url('control/eventos', $_SERVER['REQUEST_SCHEME']); ?>" role="button"
+                        href="<?php echo base_url('control/eventos'); ?>" role="button"
                         title="Cancelar"> Cancelar</a>
                     <button type="submit" class="btn btn-primary btn-sm bi-person-check-fill" title="Modificar">
                         Modificar</button>

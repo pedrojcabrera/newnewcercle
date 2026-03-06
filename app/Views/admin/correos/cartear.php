@@ -13,7 +13,7 @@
 </div>
 <div class="container col-4 mx-auto">
    <div class="card-header fs-5">Seleccione grupos de destinatarios</div>
-   <form action="<?=base_url('control/correos/enviomasivo/'.$id, $_SERVER['REQUEST_SCHEME'])?>" method="post">
+   <form action="<?=base_url('control/correos/enviomasivo/'.$id)?>" method="post">
       <div class="card-body">
          <div class="form-check">
             <input class="form-check-input" name="socio" type="checkbox" value="0" id="socio">
@@ -53,7 +53,7 @@
          </div>
       </div>
       <div class="card-footer text-end">
-         <a href="<?=base_url('control/correos', $_SERVER['REQUEST_SCHEME'])?>" type="button" title="Regresar"
+         <a href="<?=base_url('control/correos')?>" type="button" title="Regresar"
             class="btn btn-md btn-success bi-box-arrow-left"></a>
          <button type="submit" class="btn btn-primary btn-md bi-send" title="Enviar correo"></button>
       </div>

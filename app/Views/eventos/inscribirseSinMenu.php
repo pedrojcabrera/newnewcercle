@@ -30,7 +30,7 @@
             </div>
         </div>
         <?php endif; ?>
-        <?=form_open(base_url("inscripcion",$_SERVER['REQUEST_SCHEME']),['id'=>'form-Inscribirse', 'method'=>'post'])?>
+        <?=form_open(base_url("inscripcion"),['id'=>'form-Inscribirse', 'method'=>'post'])?>
 
         <div id="evento_titulo">
             <h2>

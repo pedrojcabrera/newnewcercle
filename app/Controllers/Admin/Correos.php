@@ -42,7 +42,7 @@ class Correos extends BaseController
         ];
 
         if (!$this->validate($reglas)) {
-            return redirect()->to(base_url('control/correos/nuevo', $_SERVER['REQUEST_SCHEME']))->withInput();
+            return redirect()->to(base_url('control/correos/nuevo'))->withInput();
         }
 
         $post = $this->request->getPost();
@@ -52,7 +52,7 @@ class Correos extends BaseController
             'asunto' => $post['asunto'],
         ]);
 
-        return redirect()->to(base_url('control/correos', $_SERVER['REQUEST_SCHEME']));
+        return redirect()->to(base_url('control/correos'));
     }
 
     public function edit($id = null)
@@ -74,7 +74,7 @@ class Correos extends BaseController
         ];
 
         if (!$this->validate($reglas)) {
-            return redirect()->to(base_url('control/correos/editar/' . $id, $_SERVER['REQUEST_SCHEME']))->withInput();
+            return redirect()->to(base_url('control/correos/editar/' . $id))->withInput();
         }
 
         $post = $this->request->getPost();
@@ -87,13 +87,13 @@ class Correos extends BaseController
 
         $this->model->save($datos);
 
-        return redirect()->to(base_url('control/correos', $_SERVER['REQUEST_SCHEME']));
+        return redirect()->to(base_url('control/correos'));
     }
 
     public function delete($id = null)
     {
         $this->model->delete($id);
-        return redirect()->to(base_url('control/correos', $_SERVER['REQUEST_SCHEME']));
+        return redirect()->to(base_url('control/correos'));
     }
 
     public function prepmail($id = null)
@@ -117,7 +117,7 @@ class Correos extends BaseController
 
         if (empty($post)) {
             $mensaje_error = "Necesitas seleccionar al menos un grupo de destinatarios";
-            return redirect()->to(base_url('control/correos/cartear/' . $id, $_SERVER['REQUEST_SCHEME']))->with('mensaje_error', $mensaje_error);
+            return redirect()->to(base_url('control/correos/cartear/' . $id))->with('mensaje_error', $mensaje_error);
         }
 
         $mailingsResumenModel  = new MailingsResumenModel;

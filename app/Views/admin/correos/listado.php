@@ -7,7 +7,7 @@
         </div>
         <div class="boton-cancelar">
             <a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left"
-            href="<?= base_url('control/correos', $_SERVER['REQUEST_SCHEME']); ?>" role="button"
+            href="<?= base_url('control/correos'); ?>" role="button"
             title="Cancelar"> Cancelar</a>
         </div>
     </div>
@@ -77,7 +77,7 @@
         </div>
         <div class="boton-cancelar">
             <a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left"
-            href="<?= base_url('control/correos', $_SERVER['REQUEST_SCHEME']); ?>" role="button"
+            href="<?= base_url('control/correos'); ?>" role="button"
             title="Cancelar"> Cancelar</a>
         </div>
     </div>

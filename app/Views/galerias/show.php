@@ -12,7 +12,7 @@
         }
     ?>
    <figure>
-      <img src=" <?=base_url('fotosUsuarios/'.$foto,$_SERVER['REQUEST_SCHEME'])?>" alt="">
+      <img src=" <?=base_url('fotosUsuarios/'.$foto)?>" alt="">
 
       <figcaption>
          <?= $nombre?>
@@ -27,7 +27,7 @@
    </div>
    <?php foreach ($obras as $obra): ?>
    <div class="card item-0 item-4">
-      <img src="<?=base_url('galerias/'.$artista.'/'.$obra->cuadro.'.jpg',$_SERVER['REQUEST_SCHEME'])?>" alt="">
+      <img src="<?=base_url('galerias/'.$artista.'/'.$obra->cuadro.'.jpg')?>" alt="">
       <div class="card-body">
          <h5 class="card-title"><?=$obra->titulo?></h5>
          <h6 class="ano"><?=($obra->ano > 0) ? 'Año: '.$obra->ano : ''?></h6>
