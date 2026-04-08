@@ -61,19 +61,43 @@
 
 <?= $this->section('masJS')?>
 
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script src="https://www.google.com/recaptcha/api.js?render=<?=env('recaptchaSiteKey')?>" async defer></script>
 <script>
-    function onSubmitContactForm(token) {
-        document.getElementById('g-recaptcha-response').value = token;
-        document.getElementById('form-Contactar').submit();
-    }
+   (function() {
+      var form = document.getElementById('form-Contactar');
+      var tokenInput = document.getElementById('g-recaptcha-response');
+      var siteKey = '<?=env("recaptchaSiteKey")?>';
+      var isSubmitting = false;
 
-    // Ejecutar reCAPTCHA automáticamente en background
-    grecaptcha.ready(function() {
-        grecaptcha.execute('<?=env("recaptchaSiteKey")?>', {action: 'submit'}).then(function(token) {
-            document.getElementById('g-recaptcha-response').value = token;
-        });
-    });
+      function submitConToken() {
+         if (!window.grecaptcha || !siteKey) {
+            alert('No se ha podido validar reCAPTCHA. Recarga la página e inténtalo de nuevo.');
+            isSubmitting = false;
+            return;
+         }
+
+         grecaptcha.ready(function() {
+            grecaptcha.execute(siteKey, { action: 'submit' }).then(function(token) {
+               tokenInput.value = token;
+               form.submit();
+            }).catch(function() {
+               alert('No se ha podido validar reCAPTCHA. Inténtalo de nuevo.');
+               isSubmitting = false;
+            });
+         });
+      }
+
+      form.addEventListener('submit', function(e) {
+         if (isSubmitting) {
+            return;
+         }
+
+         e.preventDefault();
+         isSubmitting = true;
+         tokenInput.value = '';
+         submitConToken();
+      });
+   })();
 </script>
 
 <?= $this->endSection()?>

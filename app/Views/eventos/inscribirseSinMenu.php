@@ -78,22 +78,41 @@
 
 <script src="https://www.google.com/recaptcha/api.js?render=<?=env('recaptchaSiteKey')?>" async defer></script>
 <script>
-    grecaptcha.ready(function() {
-        grecaptcha.execute('<?=env("recaptchaSiteKey")?>', {action: 'inscripcion_evento'}).then(function(token) {
-            document.getElementById('g-recaptcha-response').value = token;
-        });
-    });
+    (function() {
+        var form = document.getElementById('form-Inscribirse');
+        var tokenInput = document.getElementById('g-recaptcha-response');
+        var siteKey = '<?=env("recaptchaSiteKey")?>';
+        var isSubmitting = false;
 
-    document.getElementById('form-Inscribirse').addEventListener('submit', function(e) {
-        var token = document.getElementById('g-recaptcha-response').value;
-        if (!token) {
-            e.preventDefault();
-            grecaptcha.execute('<?=env("recaptchaSiteKey")?>', {action: 'inscripcion_evento'}).then(function(newToken) {
-                document.getElementById('g-recaptcha-response').value = newToken;
-                document.getElementById('form-Inscribirse').submit();
+        function submitConToken() {
+            if (!window.grecaptcha || !siteKey) {
+                alert('No se ha podido validar reCAPTCHA. Recarga la página e inténtalo de nuevo.');
+                isSubmitting = false;
+                return;
+            }
+
+            grecaptcha.ready(function() {
+                grecaptcha.execute(siteKey, { action: 'inscripcion_evento' }).then(function(token) {
+                    tokenInput.value = token;
+                    form.submit();
+                }).catch(function() {
+                    alert('No se ha podido validar reCAPTCHA. Inténtalo de nuevo.');
+                    isSubmitting = false;
+                });
             });
         }
-    });
+
+        form.addEventListener('submit', function(e) {
+            if (isSubmitting) {
+                return;
+            }
+
+            e.preventDefault();
+            isSubmitting = true;
+            tokenInput.value = '';
+            submitConToken();
+        });
+    })();
 </script>
 
 <?= $this->endSection()?>
