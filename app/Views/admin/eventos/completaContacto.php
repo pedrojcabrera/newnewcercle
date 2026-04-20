@@ -9,6 +9,8 @@
 <div class="container col-4 mx-auto">
 	<div class="card-header fs-5">Marcar los grupos de pertenencia</div>
 	<form action="<?=base_url('control/contactoDesdeInscrito')?>" method="post">
+		<?= csrf_field() ?>
+		<input type="hidden" name="id_inscrito" value="<?= (int) $inscrito->id ?>">
 		<div class="card-body">
 			<div class="form-check">
 				<input class="form-check-input" name="socio" type="checkbox" id="socio">
@@ -49,8 +51,8 @@
 		</div>
 		<div class="card-footer text-center mt-3">
 			<a href="<?=base_url('control/inscritos/'.$inscrito->id_evento)?>" type="button"
-				title="Regresar" class="btn btn-md btn-success bi-box-arrow-left"> Cancelar</a>
-			<button type="submit" class="btn btn-primary btn-md bi-send" title="Crear Contacto"> Crear Contacto</button>
+				title="Regresar" class="btn btn-md btn-success"><i class="bi bi-box-arrow-left"></i></a>
+			<button type="submit" class="btn btn-primary btn-md" title="Crear Contacto"><i class="bi bi-person-plus-fill"></i></button>
 		</div>
 	</form>
 </div>

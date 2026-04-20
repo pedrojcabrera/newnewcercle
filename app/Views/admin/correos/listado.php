@@ -1,20 +1,10 @@
 <?= $this->extend('admin/plantillas/layout') ?>
 <?= $this->section('contenido') ?>
 
-<div class="container">
-    <div class="botones-superiores">
-        <div class="boton-agregar">
-        </div>
-        <div class="boton-cancelar">
-            <a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left"
-            href="<?= base_url('control/correos'); ?>" role="button"
-            title="Cancelar"> Cancelar</a>
-        </div>
-    </div>
-</div>
 <div class="container mt-0 card">
     <h2 class="w-100 text-center mb-3"><?=$correo->asunto?></h2>
 
+    <div class="table-responsive">
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -35,8 +25,8 @@
                 <td class="text-center"><?= $resumen->errores ?></td>
                 <td class="text-center"><?= $destinos[$resumen->id] ?></td>
                 <td class="text-center">
-                    <button class="btn btn-primary btn-sm bi-eyeglasses" type="button" data-bs-toggle="collapse" data-bs-target="#resumen<?= $resumen->id ?>" aria-expanded="false" 
-             aria-controls="resumen<?= $resumen->id ?>"> detalles</button>
+                    <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#resumen<?= $resumen->id ?>" aria-expanded="false"
+             aria-controls="resumen<?= $resumen->id ?>" title="Ver detalles"><i class="bi bi-eye-fill"></i></button>
                 </td>
             </tr>
             <tr>
@@ -70,15 +60,16 @@
             <?php endforeach; ?>
         </tbody>
     </table>
+    </div>
 </div>
 <div class="container mt-0">
     <div class="botones-superiores">
         <div class="boton-agregar">
         </div>
         <div class="boton-cancelar">
-            <a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left"
+            <a name="cancelar" id="cancelar" class="btn btn-success btn-sm"
             href="<?= base_url('control/correos'); ?>" role="button"
-            title="Cancelar"> Cancelar</a>
+            title="Cancelar"><i class="bi bi-box-arrow-left"></i> Cancelar</a>
         </div>
     </div>
 </div>

@@ -59,6 +59,19 @@
             <hr>
         </div>
 
+        <div class="botones-superiores">
+            <div class="boton-agregar">
+                <button type="submit" id="inscribir" value="submit" <?= $eventos ? '' : 'disabled' ?>
+                    class="btn btn-md btn-primary"><i class="bi bi-person-plus-fill"></i> Inscribir</button>
+
+            </div>
+            <div class="boton-cancelar">
+                <a name="cancelar" id="cancelar" class="btn btn-success btn-md"
+                    href="<?= base_url(isset($contacto)?'control/contactos':'dashboard') ?>"
+                    role="button" title="Cancelar"><i class="bi bi-box-arrow-left"></i> Cancelar</a>
+            </div>
+        </div>
+
         <input type="hidden" name="id_contacto" value="<?= esc($contacto->id ?? 0) ?>">
 
         <div class="mb-3">
@@ -90,20 +103,6 @@
         <div class="mb-3">
             <input type="checkbox" class="form-check-input" name="avisar" id="avisar" checked>
             <label class="form-check-label" for="avisar">Avisar por email de la inscripción</label>
-        </div>
-        <div class="botones-superiores">
-            <div class="boton-agregar">
-                <button type="submit" id="inscribir" value="submit" <?= $eventos ? '' : 'disabled' ?>
-                    class="btn btn-sm btn-primary bi-person-plus">
-                    Inscribir</button>
-
-            </div>
-            <div class="boton-cancelar">
-                <a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left"
-                    href="<?= base_url(isset($contacto)?'control/contactos':'dashboard') ?>"
-                    role="button" title="Cancelar">
-                    Cancelar</a>
-            </div>
         </div>
         <?php echo form_close(); ?>
 

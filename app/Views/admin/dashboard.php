@@ -1,97 +1,95 @@
-   <html lang="es">
+<?= $this->extend('admin/plantillas/layout'); ?>
+<?= $this->section('contenido'); ?>
 
-       <head>
-           <title>Administración</title>
+<?php if (session()->logueado): ?>
+<div class="container dashboard-admin">
+    <div class="dashboard-hero text-center">
+        <img class="dashboard-logo" src="<?= esc($dashboardLogo ?? base_url('recursos/imagenes/anagramaColor.png')); ?>"
+            alt="Cercle d'Art de Foios">
+        <p class="dashboard-subtitle mb-0">Bienvenido al panel de administración</p>
+    </div>
 
-           <meta charset="utf-8">
-           <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-           <link rel="preconnect" href="https://fonts.googleapis.com">
-           <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-           <link href="https://fonts.googleapis.com/css2?family=Lexend+Giga:wght@100..900&
-    family=Quicksand:wght@300..700&
-    family=Roboto:wght@100;300;400;500;700;900&
-    display=swap" rel="stylesheet">
-           <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-               integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-               crossorigin="anonymous">
-           <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
-           <link rel="stylesheet" type="text/css"
-               href="<?php echo base_url('recursos/DataTables/datatables.min.css'); ?>">
-           <link rel="stylesheet" type="text/css"
-               href="<?php echo base_url('recursos/styleMenu.css'); ?>">
-           <!-- CK.Editor -->
-           <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
-           <?php echo
-       "<style>
-            body {
-               background: url('" . base_url('recursos/imagenes/miroconpajaroygato.webp') . "') no-repeat center center fixed;
-               height: 100vh;
-               background-size: cover;
-               opacity: 0.9;
-               }
-       </style>";
-      ?>
+    <div class="row g-3 g-lg-4 mt-1">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <a class="dashboard-card dashboard-card-1" href="<?= base_url('control/usuarios'); ?>">
+                <span class="dashboard-pill"><?= esc((string) ($dashboardCounts['usuarios'] ?? 0)) ?></span>
+                <i class="bi bi-people-fill"></i>
+                <span>Usuarios</span>
+                <small class="dashboard-pill-secondary"><?= esc(($dashboardExtras['usuarios']['label'] ?? '')) ?>: <?= esc((string) ($dashboardExtras['usuarios']['value'] ?? 0)) ?></small>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <a class="dashboard-card dashboard-card-2" href="<?= base_url('control/sistema'); ?>">
+                <span class="dashboard-pill"><?= esc((string) ($dashboardCounts['sistema'] ?? 0)) ?></span>
+                <i class="bi bi-gear-fill"></i>
+                <span>Sistema</span>
+                <small class="dashboard-pill-secondary"><?= esc(($dashboardExtras['sistema']['label'] ?? '')) ?>: <?= esc((string) ($dashboardExtras['sistema']['value'] ?? 0)) ?></small>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <a class="dashboard-card dashboard-card-3" href="<?= base_url('control/enlaces'); ?>">
+                <span class="dashboard-pill"><?= esc((string) ($dashboardCounts['enlaces'] ?? 0)) ?></span>
+                <i class="bi bi-link-45deg"></i>
+                <span>Enlaces</span>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <a class="dashboard-card dashboard-card-4" href="<?= base_url('control/contactos'); ?>">
+                <span class="dashboard-pill"><?= esc((string) ($dashboardCounts['contactos'] ?? 0)) ?></span>
+                <i class="bi bi-person-lines-fill"></i>
+                <span>Contactos</span>
+                <small class="dashboard-pill-secondary"><?= esc(($dashboardExtras['contactos']['label'] ?? '')) ?>: <?= esc((string) ($dashboardExtras['contactos']['value'] ?? 0)) ?></small>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <a class="dashboard-card dashboard-card-5" href="<?= base_url('control/correos'); ?>">
+                <span class="dashboard-pill"><?= esc((string) ($dashboardCounts['correos'] ?? 0)) ?></span>
+                <i class="bi bi-envelope-paper-fill"></i>
+                <span>Correos Genéricos</span>
+                <small class="dashboard-pill-secondary"><?= esc(($dashboardExtras['correos']['label'] ?? '')) ?>: <?= esc((string) ($dashboardExtras['correos']['value'] ?? 0)) ?></small>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <a class="dashboard-card dashboard-card-6" href="<?= base_url('control/tipos'); ?>">
+                <span class="dashboard-pill"><?= esc((string) ($dashboardCounts['tipos'] ?? 0)) ?></span>
+                <i class="bi bi-tags-fill"></i>
+                <span>Tipos de Evento</span>
+                <small class="dashboard-pill-secondary"><?= esc(($dashboardExtras['tipos']['label'] ?? '')) ?>: <?= esc((string) ($dashboardExtras['tipos']['value'] ?? 0)) ?></small>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <a class="dashboard-card dashboard-card-7" href="<?= base_url('control/eventos'); ?>">
+                <span class="dashboard-pill"><?= esc((string) ($dashboardCounts['eventos'] ?? 0)) ?></span>
+                <i class="bi bi-calendar-event-fill"></i>
+                <span>Eventos</span>
+                <small class="dashboard-pill-secondary"><?= esc(($dashboardExtras['eventos']['label'] ?? '')) ?>: <?= esc((string) ($dashboardExtras['eventos']['value'] ?? 0)) ?></small>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <a class="dashboard-card dashboard-card-8" href="<?= base_url('control/inscripcionManual'); ?>">
+                <span class="dashboard-pill"><?= esc((string) ($dashboardCounts['inscripcionManual'] ?? 0)) ?></span>
+                <i class="bi bi-person-plus-fill"></i>
+                <span>Inscripción Manual</span>
+                <small class="dashboard-pill-secondary"><?= esc(($dashboardExtras['inscripcionManual']['label'] ?? '')) ?>: <?= esc((string) ($dashboardExtras['inscripcionManual']['value'] ?? 0)) ?></small>
+            </a>
+        </div>
+        <div class="col-12">
+            <div class="dashboard-card dashboard-card-static dashboard-card-history" role="group" aria-label="Resumen histórico">
+                <div class="dashboard-history-title-wrap">
+                    <i class="bi bi-clock-history"></i>
+                    <span class="dashboard-history-title">Histórico global</span>
+                </div>
+                <div class="dashboard-history-grid">
+                    <span class="dashboard-history-chip">Campañas: <?= esc((string) ($dashboardHistory['campanas'] ?? 0)) ?></span>
+                    <span class="dashboard-history-chip">Envíos: <?= esc((string) ($dashboardHistory['envios'] ?? 0)) ?></span>
+                    <span class="dashboard-history-chip">Errores: <?= esc((string) ($dashboardHistory['errores'] ?? 0)) ?></span>
+                    <span class="dashboard-history-chip">Inscritos: <?= esc((string) ($dashboardHistory['inscritos'] ?? 0)) ?></span>
+                    <span class="dashboard-history-chip">Lista espera: <?= esc((string) ($dashboardHistory['espera'] ?? 0)) ?></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
-           <?php echo $this->renderSection('masStyle'); ?>
-
-       </head>
-
-       <body>
-           <?php if (session()->logueado): ?>
-           <div class="container">
-               <div class="cabecera">
-                   <img src="<?php echo base_url('recursos/imagenes/anagramaColor.png'); ?>" alt="">
-               </div>
-               <div class="gallery">
-                   <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/usuarios'); ?>">Usuarios</a>
-                   <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/sistema'); ?>">Sistema</a>
-
-                   <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/enlaces'); ?>">Enlaces</a>
-
-                   <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/contactos'); ?>">Contactos</a>
-                   <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/correos'); ?>">Correos
-                       Genéricos</a>
-
-                   <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/tipos'); ?>">Tipos
-                       de
-                       Evento</a>
-                   <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/eventos'); ?>">Eventos</a>
-                   <!-- 
-                   <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/emailsIns'); ?>">Listas
-                       <br>de<br>Espera
-                   </a>
- -->
-                   <a class="gallery-item elemento"
-                       href="<?php echo base_url('control/inscripcionManual'); ?>">Inscripción
-                       manual a
-                       un evento</a>
-                   <!-- <a class="gallery-item elemento"
-               href="<?php echo base_url('control/galerias'); ?>">Galerías</a> -->
-               </div>
-               <div class="gallery">
-                   <a class="elemento salir bi-door-open" title="Cerrar sesión"
-                       href="<?php echo base_url('logout'); ?>">
-                       Salir</a>
-               </div>
-           </div>
-           <!-- ---------------------------------------------------- -->
-           <script>
-           // Agregar una entrada en el historial para evitar el retroceso
-           window.history.pushState(null, "", window.location.href);
-           window.onpopstate = function() {
-               window.history.pushState(null, "", window.location.href);
-           };
-           </script>
-       </body>
-
-
-   </html>
-   <?php endif; ?>
+<?= $this->endSection(); ?>

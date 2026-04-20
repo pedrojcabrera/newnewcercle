@@ -23,18 +23,18 @@
     <div class="container subir-fotos">
         <form action="<?= base_url('control/fotos/' . $evento->id) ?>" method="post"
             enctype="multipart/form-data">
+            <?= csrf_field() ?>
             <div class="form-group">
                 <input class="form-control" type="file" name="images[]" id="archivoInput" multiple>
             </div>
             <hr>
-            <button class="btn btn-primary btn-sm bi-camera" id="btnEnviar" disabled type="submit"> Añadir
-                Fotografías</button>
+            <button class="btn btn-primary btn-sm" id="btnEnviar" disabled type="submit"><i class="bi bi-camera-fill"></i> Subir imagen seleccionada</button>
         </form>
     </div>
 </div>
 <div class="btn-regresar">
-    <a class="btn btn-success btn-sm bi-card-list"
-        href="<?= base_url('control/eventos') ?>"> Regresar a la lista de Eventos</a>
+    <a class="btn btn-success btn-sm"
+        href="<?= base_url('control/eventos') ?>" title="Regresar a la lista de Eventos"><i class="bi bi-box-arrow-left"></i> Cancelar</a>
 </div>
 <div class="container contenedor-4">
     <!-- Modal -->
@@ -44,17 +44,22 @@
     </div>
 
     <?php foreach ($fotos as $foto): ?>
+    <?php if (preg_match('/\.(jpg)$/i', $foto)) : ?>
+
     <div class="card item-0 item-4">
         <figure>
             <img src="<?= base_url('imgEventos/ev_' . $evento->id . "/" . $foto) ?>" alt="">
             <hr>
             <figcaption>
-                <a href="<?= base_url('control/fotos/' . $evento->id . '/' . $foto) ?>"
-                    class="btn btn-danger btn-sm bi-trash3" onclick="return confirm('¿ Confirma el borrado ?');"> Quitar
-                    Foto</a>
+                <form action="<?= base_url('control/fotos/' . $evento->id . '/' . rawurlencode($foto)) ?>" method="POST">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('\u00bf Confirma el borrado ?');"><i class="bi bi-trash3-fill"></i> Eliminar Imagen</button>
+                </form>
             </figcaption>
         </figure>
     </div>
+    <?php endif; ?>
     <?php endforeach; ?>
 
 </div>

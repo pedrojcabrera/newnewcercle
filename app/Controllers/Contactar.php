@@ -43,8 +43,6 @@ class Contactar extends BaseController
 
         $email->setFrom('noreply@cercledartfoios.com',$this->nombre,'rechazados@cercledartfoios.com');
 
-        $email->clear();
-
         $email->setTo('correo@cercledartfoios.com, info@cercledartfoios.com');
 
         $email->setSubject('Correo de Contactar de la Web');

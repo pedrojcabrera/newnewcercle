@@ -13,6 +13,11 @@ class Auth implements FilterInterface
         if(!session()->get('logueado')) {
             return redirect()->to(base_url('login'));
         }
+
+        if((int) session()->get('user_admin') !== 1) {
+            session()->destroy();
+            return redirect()->to(base_url('login'));
+        }
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)

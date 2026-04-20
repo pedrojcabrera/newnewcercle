@@ -55,6 +55,11 @@ class EventosModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
+    private function getCardSelect(): string
+    {
+        return 'eventos.id, eventos.titulo, eventos.desde, eventos.hasta, tiposeventos.eventonombre AS grupo';
+    }
+
     /**
      * Obtiene los últimos eventos finalizados
      * @param int $limit Cantidad de eventos a retornar
@@ -66,7 +71,7 @@ class EventosModel extends Model
 
         $db = \Config\Database::connect();
         $result = $db->table('neventos AS eventos')
-            ->select('eventos.*, eventos.desde, eventos.hasta, tiposeventos.eventonombre AS grupo')
+            ->select($this->getCardSelect())
             ->join('tiposeventos', 'tiposeventos.eventotipo = eventos.eventotipo')
             ->where('eventos.visible', '1')
             ->where('eventos.hasta <', $hoy)
@@ -86,9 +91,68 @@ class EventosModel extends Model
     {
         $db = \Config\Database::connect();
         $result = $db->table('neventos AS eventos')
-            ->select('eventos.*, tiposeventos.eventonombre AS grupo')
+            ->select($this->getCardSelect())
             ->join('tiposeventos', 'tiposeventos.eventotipo = eventos.eventotipo')
             ->where('eventos.visible', 1)
+            ->orderBy('eventos.hasta', 'DESC')
+            ->get()
+            ->getResult();
+
+        return $result ? $result : [];
+    }
+
+    /**
+     * Obtiene lista paginada de eventos visibles para frontend.
+     * @param int $page Página actual
+     * @param int $perPage Cantidad por página
+     * @return array{eventos: array, total: int, totalPages: int, page: int, perPage: int}
+     */
+    public function getListaEventosPaginada(int $page = 1, int $perPage = 24): array
+    {
+        $page = max(1, $page);
+        $perPage = max(1, $perPage);
+
+        $db = \Config\Database::connect();
+
+        $baseBuilder = $db->table('neventos AS eventos')
+            ->join('tiposeventos', 'tiposeventos.eventotipo = eventos.eventotipo')
+            ->where('eventos.visible', 1);
+
+        $total = (clone $baseBuilder)->countAllResults();
+        $totalPages = max(1, (int) ceil($total / $perPage));
+        $page = min($page, $totalPages);
+        $offset = ($page - 1) * $perPage;
+
+        $eventos = $baseBuilder
+            ->select($this->getCardSelect())
+            ->orderBy('eventos.hasta', 'DESC')
+            ->limit($perPage, $offset)
+            ->get()
+            ->getResult();
+
+        return [
+            'eventos' => $eventos ?: [],
+            'total' => $total,
+            'totalPages' => $totalPages,
+            'page' => $page,
+            'perPage' => $perPage,
+        ];
+    }
+
+    /**
+     * Obtiene los próximos eventos visibles para portada.
+     * @return array
+     */
+    public function getProximosEventos(): array
+    {
+        $hoy = \CodeIgniter\I18n\Time::createFromDate()->toDateString();
+
+        $db = \Config\Database::connect();
+        $result = $db->table('neventos AS eventos')
+            ->select($this->getCardSelect())
+            ->join('tiposeventos', 'tiposeventos.eventotipo = eventos.eventotipo')
+            ->where('eventos.visible', 1)
+            ->where('eventos.hasta >=', $hoy)
             ->orderBy('eventos.hasta', 'DESC')
             ->get()
             ->getResult();
@@ -121,7 +185,7 @@ class EventosModel extends Model
      */
     public function getEventoFotos(int $id): array
     {
-        $dirPath = 'imgEventos/ev_' . $id;
+        $dirPath = FCPATH . 'imgEventos/ev_' . $id;
 
         if (!is_dir($dirPath)) {
             return [];
@@ -130,11 +194,24 @@ class EventosModel extends Model
         $imgs = scandir($dirPath);
         $fotos = [];
         $excludedFiles = ['.', '..', 'Cartel.jpg', 'cartel.jpg'];
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
         foreach ($imgs as $img) {
-            if (!in_array($img, $excludedFiles)) {
-                $fotos[] = $img;
+            if (in_array($img, $excludedFiles, true)) {
+                continue;
             }
+
+            $filePath = $dirPath . DIRECTORY_SEPARATOR . $img;
+            if (!is_file($filePath)) {
+                continue;
+            }
+
+            $extension = strtolower(pathinfo($img, PATHINFO_EXTENSION));
+            if (!in_array($extension, $allowedExtensions, true)) {
+                continue;
+            }
+
+            $fotos[] = $img;
         }
 
         return $fotos;

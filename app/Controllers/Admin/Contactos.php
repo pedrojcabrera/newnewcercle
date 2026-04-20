@@ -12,12 +12,40 @@ use App\Models\EventosModel;
 use App\Models\CorreosModel;
 
 use App\Controllers\BaseController;
-use CodeIgniter\HTTP\ResponseInterface;
 
 class Contactos extends BaseController
 {
 
     public $model;
+
+    private function normalizarDatosContacto(array $post, ?int $id = null): array
+    {
+        $datos = [
+            'nombre'        => trim((string) ($post['nombre'] ?? '')),
+            'apellidos'     => trim((string) ($post['apellidos'] ?? '')),
+            'email'         => trim((string) ($post['correo'] ?? '')),
+            'dni'           => trim((string) ($post['dni'] ?? '')),
+            'telefono'      => trim((string) ($post['telefono'] ?? '')),
+            'direccion'     => trim((string) ($post['direccion'] ?? '')),
+            'poblacion'     => trim((string) ($post['poblacion'] ?? '')),
+            'codpostal'     => trim((string) ($post['codpostal'] ?? '')),
+            'provincia'     => trim((string) ($post['provincia'] ?? '')),
+            'mailing'       => isset($post['mailing']) ? 1 : 0,
+            'invitaciones'  => isset($post['invitaciones']) ? 1 : 0,
+            'socio'         => isset($post['socio']) ? 1 : 0,
+            'alumno'        => isset($post['alumno']) ? 1 : 0,
+            'pdalumno'      => isset($post['pdalumno']) ? 1 : 0,
+            'pintor'        => isset($post['pintor']) ? 1 : 0,
+            'dtaller'       => isset($post['dtaller']) ? 1 : 0,
+            'amigo'         => isset($post['amigo']) ? 1 : 0,
+        ];
+
+        if ($id !== null) {
+            $datos['id'] = $id;
+        }
+
+        return $datos;
+    }
 
 
     public function __construct()
@@ -26,24 +54,96 @@ class Contactos extends BaseController
     }
 
     public function lista(){
+        $allowedSorts = ['nombre', 'email', 'telefono', 'dni'];
+        $allowedPerPage = [10, 15, 25, 50, 100];
+        $calidades = [
+            'mailing'       => 'Correos',
+            'invitaciones'  => 'Invitaciones',
+            'socio'         => 'Socio',
+            'alumno'        => 'Alumno',
+            'pdalumno'      => 'Padre/Madre',
+            'pintor'        => 'Pintor',
+            'dtaller'       => 'Talleres',
+            'amigo'         => 'Amigo',
+        ];
+
+        $sort = (string) ($this->request->getGet('sort') ?? 'nombre');
+        if (! in_array($sort, $allowedSorts, true)) {
+            $sort = 'nombre';
+        }
+
+        $dir = strtolower((string) ($this->request->getGet('dir') ?? 'asc'));
+        $dir = $dir === 'desc' ? 'desc' : 'asc';
+
+        $q = trim((string) ($this->request->getGet('q') ?? ''));
+        $calidad = trim((string) ($this->request->getGet('calidad') ?? ''));
+        if ($calidad !== '' && ! array_key_exists($calidad, $calidades)) {
+            $calidad = '';
+        }
+
+        $perPage = (int) ($this->request->getGet('perPage') ?? 25);
+        if (! in_array($perPage, $allowedPerPage, true)) {
+            $perPage = 25;
+        }
+
+        $page = max(1, (int) ($this->request->getGet('page') ?? 1));
+
+        $builder = $this->model->builder();
+        $builder->select('*');
+
+        if ($q !== '') {
+            $builder->groupStart()
+                ->like('nombre', $q)
+                ->orLike('apellidos', $q)
+                ->orLike('email', $q)
+                ->orLike('dni', $q)
+                ->orLike('telefono', $q)
+                ->groupEnd();
+        }
+
+        if ($calidad !== '') {
+            $builder->where($calidad, 1);
+        }
+
+        $countBuilder = clone $builder;
+        $totalFiltrado = (int) $countBuilder->countAllResults();
+
+        $totalPaginas = max(1, (int) ceil($totalFiltrado / $perPage));
+        if ($page > $totalPaginas) {
+            $page = $totalPaginas;
+        }
+
+        $offset = ($page - 1) * $perPage;
+        $contactos = $builder
+            ->orderBy($sort, $dir)
+            ->limit($perPage, $offset)
+            ->get()
+            ->getResultObject();
+
+        $desde = $totalFiltrado > 0 ? $offset + 1 : 0;
+        $hasta = min($offset + $perPage, $totalFiltrado);
+
         $data = [
             'titulo'    => 'Contactos',
-            'calidades' => [
-                'mailing'       => 'Correos',
-                'invitaciones'  => 'Invitaciones',
-                'socio'         => 'Socio',
-                'alumno'        => 'Alumno',
-                'pdalumno'      => 'Padre/Madre',
-                'pintor'        => 'Pintor',
-                'dtaller'       => 'Talleres',
-                'amigo'         => 'Amigo',
-            ],
+            'contactos' => $contactos,
+            'sort' => $sort,
+            'dir' => $dir,
+            'q' => $q,
+            'calidad' => $calidad,
+            'perPage' => $perPage,
+            'page' => $page,
+            'totalFiltrado' => $totalFiltrado,
+            'totalPaginas' => $totalPaginas,
+            'desde' => $desde,
+            'hasta' => $hasta,
+            'calidades' => $calidades,
         ];
         return view('admin/contactos/lista',$data);
     }
 
     public function getContactosAjax(){
-        if (!$this->request->isAJAX()) {
+        // DataTables puede no enviar siempre X-Requested-With en algunas versiones/configuraciones.
+        if (!$this->request->isAJAX() && !$this->request->getGet('draw')) {
             return $this->response->setJSON(['error' => 'Solo peticiones AJAX']);
         }
 
@@ -56,9 +156,10 @@ class Contactos extends BaseController
         $searchValue = $request['search']['value'] ?? '';
 
         // Columnas para ordenación
-        $columns = ['id', 'nombre', 'email', 'calidades'];
+        $columns = ['nombre', 'email', 'calidades'];
         $orderColumnIndex = intval($request['order'][0]['column'] ?? 0);
         $orderDir = $request['order'][0]['dir'] ?? 'asc';
+        $orderDir = strtolower($orderDir) === 'desc' ? 'desc' : 'asc';
         $orderColumn = $columns[$orderColumnIndex] ?? 'nombre';
 
         // Obtener contactos con calidades concatenadas en SQL (mucho más rápido)
@@ -93,16 +194,15 @@ class Contactos extends BaseController
             }
 
             // Construir acciones
-            $acciones = '<a title="Editar" class="btn btn-success btn-sm bi-pencil" href="' . base_url('control/contactos/editar/' . $contacto->id) . '"> Editar</a> ';
+            $acciones = '<a title="Editar" aria-label="Editar" class="btn btn-success btn-sm bi-pencil" href="' . base_url('control/contactos/editar/' . $contacto->id) . '"><span class="visually-hidden">Editar</span></a> ';
             $acciones .= '<form style="display: inline;" action="' . base_url('control/contactos/' . $contacto->id) . '" method="POST">';
             $acciones .= '<input type="hidden" name="_method" value="DELETE">';
-            $acciones .= '<button type="submit" title="Borrar" class="btn btn-danger btn-sm bi-eraser" onclick="return confirm(\'¿ Confirma el borrado ?\');"> Borrar</button>';
+            $acciones .= '<button type="submit" title="Borrar" aria-label="Borrar" class="btn btn-danger btn-sm bi-eraser" onclick="return confirm(\'¿ Confirma el borrado ?\');"><span class="visually-hidden">Borrar</span></button>';
             $acciones .= '</form> ';
-            $acciones .= '<a title="Historia" class="btn btn-secondary btn-sm bi-clock-history" href="' . base_url('control/contactos/historia/' . $contacto->id) . '"> Historia</a> ';
-            $acciones .= '<a title="Inscribir" class="btn btn-warning btn-sm bi-pencil-square" href="' . base_url('control/inscripcionManual/' . $contacto->id) . '"> Inscribir</a>';
+            $acciones .= '<a title="Historia" aria-label="Historia" class="btn btn-secondary btn-sm bi-clock-history" href="' . base_url('control/contactos/historia/' . $contacto->id) . '"><span class="visually-hidden">Historia</span></a> ';
+            $acciones .= '<a title="Inscribir" aria-label="Inscribir" class="btn btn-warning btn-sm bi-pencil-square" href="' . base_url('control/inscripcionManual/' . $contacto->id) . '"><span class="visually-hidden">Inscribir</span></a>';
 
             $data[] = [
-                '<span>' . $contacto->id . '</span>',
                 '<small>' . trim($contacto->nombre . ' ' . $contacto->apellidos) .
                     (!empty($contacto->dni) ? '<br>DNI: ' . $contacto->dni : '') . '</small>',
                 '<small>' . trim($contacto->email) . '<br>Tel: ' . trim($contacto->telefono) . '</small>',
@@ -140,34 +240,7 @@ class Contactos extends BaseController
 
         $post = $this->request->getPost();
 
-        $mailing = isset($post['mailing']) ? 1 : 0;
-        $invitaciones = isset($post['invitaciones']) ? 1 : 0;
-        $socio = isset($post['socio']) ? 1 : 0;
-        $alumno = isset($post['alumno']) ? 1 : 0;
-        $pdalumno = isset($post['pdalumno']) ? 1 : 0;
-        $pintor = isset($post['pintor']) ? 1 : 0;
-        $dtaller = isset($post['dtaller']) ? 1 : 0;
-        $amigo = isset($post['amigo']) ? 1 : 0;
-
-        $this->model->insert([
-            'nombre'        => trim($post['nombre']),
-            'apellidos'     => trim($post['apellidos']),
-            'email'         => trim($post['correo']),
-            'dni'           => trim($post['dni']),
-            'telefono'      => trim($post['telefono']),
-            'direccion'     => trim($post['direccion']),
-            'poblacion'     => trim($post['poblacion']),
-            'codpostal'     => trim($post['codpostal']),
-            'provincia'     => trim($post['provincia']),
-            'mailing'       => $mailing,
-            'invitaciones'  => $invitaciones,
-            'socio'         => $socio,
-            'alumno'        => $alumno,
-            'pdalumno'      => $pdalumno,
-            'pintor'        => $pintor,
-            'dtaller'       => $dtaller,
-            'amigo'         => $amigo,
-        ]);
+        $this->model->insert($this->normalizarDatosContacto($post));
 
         return redirect()->to(base_url('control/contactos'));
     }
@@ -196,35 +269,7 @@ class Contactos extends BaseController
 
         $post = $this->request->getPost();
 
-        $mailing        = isset($post['mailing']) ? 1 : 0;
-        $invitaciones   = isset($post['invitaciones']) ? 1 : 0;
-        $socio          = isset($post['socio']) ? 1 : 0;
-        $alumno         = isset($post['alumno']) ? 1 : 0;
-        $pdalumno       = isset($post['pdalumno']) ? 1 : 0;
-        $pintor         = isset($post['pintor']) ? 1 : 0;
-        $dtaller        = isset($post['dtaller']) ? 1 : 0;
-        $amigo          = isset($post['amigo']) ? 1 : 0;
-
-        $datos = [
-            'id'            => $id,
-            'nombre'        => trim($post['nombre']),
-            'apellidos'     => trim($post['apellidos']),
-            'email'         => trim($post['correo']),
-            'dni'           => trim($post['dni']),
-            'telefono'      => trim($post['telefono']),
-            'direccion'     => trim($post['direccion']),
-            'poblacion'     => trim($post['poblacion']),
-            'codpostal'     => trim($post['codpostal']),
-            'provincia'     => trim($post['provincia']),
-            'mailing'       => $mailing,
-            'invitaciones'  => $invitaciones,
-            'socio'         => $socio,
-            'alumno'        => $alumno,
-            'pdalumno'      => $pdalumno,
-            'pintor'        => $pintor,
-            'dtaller'       => $dtaller,
-            'amigo'         => $amigo,
-        ];
+        $datos = $this->normalizarDatosContacto($post, (int) $id);
 
         $this->model->save($datos);
 
@@ -241,7 +286,7 @@ class Contactos extends BaseController
         $modelInvitados = new InvitadosModel();
         $modelInscritos = new InscritosModel();
         $modelEnEspera  = new EnEsperaModel();
-        $modelDetalles  = new mailingsDetallesModel();
+        $modelDetalles  = new MailingsDetallesModel();
         $modelResumen   = new MailingsResumenModel();
         $modelEventos   = new EventosModel();
         $modelCorreos   = new CorreosModel();

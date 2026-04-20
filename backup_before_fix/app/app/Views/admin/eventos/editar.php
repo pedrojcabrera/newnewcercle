@@ -255,24 +255,14 @@
                     <label for="texto" class="form-label">Texto para la Web</label>
                     <textarea class="form-control" name="texto" id="texto"
                         rows="4"><?php echo set_value('texto', $evento->texto); ?></textarea>
-                    <script>
-                    CKEDITOR.replace("texto", {
-                        language: 'es',
-                        versionCheck: false
-                    });
-                    </script>
+                    
                 </div>
                 <div class="mb-3">
                     <label for="texto_carta" class="form-label">Cuerpo del texto para invitación por
                         correo</label>
                     <textarea class="form-control" name="texto_carta" id="texto_carta"
                         rows="3"><?php echo set_value('texto_carta', $evento->texto_carta); ?></textarea>
-                    <script>
-                    CKEDITOR.replace("texto_carta", {
-                        language: 'es',
-                        versionCheck: false
-                    });
-                    </script>
+                    
                 </div>
                 <div class="d-flex justify-content-between mt-3">
                     <a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left"

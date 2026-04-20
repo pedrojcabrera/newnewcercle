@@ -18,23 +18,33 @@
             integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
         <link rel="stylesheet" type="text/css"
-            href="<?=base_url('recursos/DataTables/datatables.min.css')?>">
-        <link rel="stylesheet" type="text/css"
             href="<?=base_url('recursos/styleGaleristas.css')?>">
-        <!-- CK.Editor -->
-        <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 
         <?= $this->renderSection('masStyle') ?>
 
     </head>
 
     <body>
-        <?= $this->include('galeristas/cabecera') ?>
-
-        <!-- <h1><?= $titulo ?></h1> -->
-
-        <?= $this->renderSection('contenido') ?>
-
+        <?php
+        $mostrarCabecera = isset($mostrarCabecera)
+            ? (bool) $mostrarCabecera
+            : (bool) session()->get('hayGalerias');
+        ?>
+        <div class="gal-shell<?= $mostrarCabecera ? '' : ' gal-shell-auth' ?>">
+            <?php if ($mostrarCabecera): ?>
+            <?= $this->include('galeristas/cabecera') ?>
+            <?php endif; ?>
+            <div class="gal-content">
+                <?php if ($mostrarCabecera): ?>
+                <header class="gal-actionbar">
+                    <h1 class="gal-action-title"><?= esc($titulo ?? 'Galerista') ?></h1>
+                </header>
+                <?php endif; ?>
+                <main class="gal-main container-fluid px-3 px-md-4 pb-4">
+                    <?= $this->renderSection('contenido') ?>
+                </main>
+            </div>
+        </div>
         <?= $this->include('galeristas/footer') ?>
 
         <?= $this->renderSection('masJS') ?>

@@ -1,18 +1,28 @@
 <?= $this->extend('plantillas/layout')?>
 <?= $this->section('contenido')?>
+<?php
+$textoEventoHtml = trim((string) ($evento->texto ?? ''));
+if ($textoEventoHtml !== '') {
+    $textoEventoHtml = html_entity_decode($textoEventoHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $textoEventoHtml = strip_tags($textoEventoHtml, '<p><br><strong><b><em><i><u><ul><ol><li><a><span><div><h1><h2><h3><h4><h5><h6><blockquote><hr><img>');
+    $textoEventoHtml = preg_replace('/\son[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $textoEventoHtml) ?? $textoEventoHtml;
+    $textoEventoHtml = preg_replace('/\s(href|src)\s*=\s*("|\')\s*javascript:[^"\']*("|\')/i', ' $1="#"', $textoEventoHtml) ?? $textoEventoHtml;
+}
+?>
 <div class="container contenedor-4">
     <div class="item-0 item-3">
-        <?php $cartel = file_exists('imgEventos/ev_'.$evento->id.'/cartel.jpg') ? 'imgEventos/ev_'.$evento->id.'/cartel.jpg' : 'imgEventos/eventos.jpg'?>
-        <img src="<?=base_url($cartel).'?v='.filemtime($cartel)?>" alt="">
-        <h6 class="evento-titulo"><?=strtoupper($evento->titulo)?></h6>
-        <p class="desde-hasta">Desde el <?=uti_fecha($evento->desde)?> hasta el <?=uti_fecha($evento->hasta)?></p>
+        <img src="<?= base_url('imgEventos/ev_' . $evento->id . '/cartel.jpg') ?>"
+            onerror="this.onerror=null;this.src='<?= base_url('imgEventos/eventos.jpg') ?>'"
+            alt="Cartel del evento <?= esc($evento->titulo) ?>">
+        <h6 class="evento-titulo"><?= esc(strtoupper($evento->titulo)) ?></h6>
+        <p class="desde-hasta">Desde el <?= esc(uti_fecha($evento->desde)) ?> hasta el <?= esc(uti_fecha($evento->hasta)) ?></p>
         <p class="estado-4 <?= uti_quita_(uti_estado_evento($evento->desde,$evento->hasta))?>">
-            <?=strtoupper($evento->grupo) . "   -   " . uti_estado_evento($evento->desde,$evento->hasta)?>
+            <?= esc(strtoupper($evento->grupo) . '   -   ' . uti_estado_evento($evento->desde, $evento->hasta)) ?>
         </p>
         <?= ($pdf or $inscripcion) ? "<div class='botones'>" : "" ?>
 
         <?php if($pdf): ?>
-        <a class="bases-4" href="<?=base_url($pdf)?>" target="_blank">Bases</a>
+        <a class="bases-4" href="<?=base_url($pdf)?>" target="_blank" rel="noopener noreferrer">Bases</a>
         <?php endif; ?>
 
         <?php if($evento->aforo_completo): ?>
@@ -30,7 +40,7 @@
     </div>
 </div>
 <article class="sobre_nosotros">
-    <?= $evento->texto ?>
+    <?= $textoEventoHtml ?>
 </article>
 <?php if(count($fotos)>0): ?>
 <div class="container contenedor-4">
@@ -42,7 +52,8 @@
 
     <?php foreach($fotos as $foto): ?>
     <div class="item-0 item-4 foto-4">
-        <img src="<?=base_url('imgEventos/ev_'.$evento->id.'/'.$foto)?>" alt=""
+        <img src="<?= base_url('imgEventos/ev_' . $evento->id . '/' . rawurlencode($foto)) ?>" alt="Imagen del evento <?= esc($evento->titulo) ?>"
+            onerror="this.closest('.foto-4').style.display='none';"
             class="card-img-top">
     </div>
     <?php endforeach; ?>

@@ -25,6 +25,40 @@ body {
 	text-rendering: optimizeLegibility;
 }
 
+/* Mejor contraste de controles de formulario sobre fondos variables */
+input:not([type='hidden']):not([type='submit']):not([type='reset']):not([type='button']),
+select,
+textarea,
+.form-control,
+.form-select {
+	background-color: #ffffff;
+	border: 1px solid #b5bec8;
+	color: #1c2833;
+	box-shadow: 0 1px 2px rgba(22, 38, 52, 0.08);
+}
+
+input:not([type='hidden']):not([type='submit']):not([type='reset']):not([type='button']):focus,
+select:focus,
+textarea:focus,
+.form-control:focus,
+.form-select:focus {
+	background-color: #ffffff;
+	border-color: #bf6300;
+	box-shadow: 0 0 0 0.2rem rgba(191, 99, 0, 0.2);
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+	accent-color: #bf6300;
+	outline: 1px solid rgba(28, 40, 51, 0.34);
+	outline-offset: 1px;
+}
+
+input[type='file'] {
+	padding: 0.3rem;
+	border-radius: 0.35rem;
+}
+
 header {
 	/* background-color: rgba(247, 248, 249, 1); */
 	padding: 0.4rem 0 0;

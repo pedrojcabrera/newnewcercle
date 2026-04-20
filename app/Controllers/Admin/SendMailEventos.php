@@ -8,7 +8,6 @@ use App\Models\EnEsperaModel;
 use App\Models\InscritosModel;
 use App\Models\InvitadosModel;
 use App\Models\TiposEventosModel;
-use Kint\Value\FunctionValue;
 
 class Eventos extends BaseController
 {
@@ -37,6 +36,42 @@ class Eventos extends BaseController
 
 		$this->hoy   = date('Y-m-d');
 		$this->ahora = date('Y-m-d H:i');
+	}
+
+			private function getUnsubscribeSecret(): ?string
+			{
+				$secret = trim((string) env('unsubscribeTokenSecret'));
+				if ($secret !== '') {
+					return $secret;
+				}
+
+				$secret = trim((string) env('encryption.key'));
+				if ($secret !== '') {
+					return $secret;
+				}
+
+				return null;
+			}
+
+			private function buildUnsubscribeToken(int $contactoId, string $scope): ?string
+	{
+				$secret = $this->getUnsubscribeSecret();
+				if ($secret === null) {
+					return null;
+				}
+
+		return hash_hmac('sha256', $scope . '|' . $contactoId, $secret);
+	}
+
+	private function buildUnsubscribeUrl(int $contactoId, string $scope): string
+	{
+				$token = $this->buildUnsubscribeToken($contactoId, $scope);
+				if ($token === null) {
+					log_message('critical', 'No se pudo generar token de baja: falta unsubscribeTokenSecret y encryption.key.');
+					return base_url('contactar');
+				}
+
+				return base_url('bajasxpiecorreo/' . $scope . '/' . $contactoId . '/' . $token);
 	}
 
 	public function sendmail($id = null)
@@ -68,32 +103,43 @@ class Eventos extends BaseController
 
 		$condiciones = [];
 		if ($evento->socio) {
-			$condiciones[] = "socio = 1"; 
-		} 
+			$condiciones[] = "socio = 1";
+		}
 		if ($evento->alumno) {
-			$condiciones[] = "alumno = 1"; 
-		} 
+			$condiciones[] = "alumno = 1";
+		}
 		if ($evento->pdalumno) {
-			$condiciones[] = "pdalumno = 1"; 
-		} 
+			$condiciones[] = "pdalumno = 1";
+		}
 		if ($evento->pintor) {
-			$condiciones[] = "pintor = 1"; 
-		} 
+			$condiciones[] = "pintor = 1";
+		}
 		if ($evento->dtaller) {
-			$condiciones[] = "dtaller = 1"; 
-		} 
+			$condiciones[] = "dtaller = 1";
+		}
 		if ($evento->amigo) {
-			$condiciones[] = "amigo = 1"; 
-		} 
+			$condiciones[] = "amigo = 1";
+		}
 
-		$consulta = "invitaciones = 1 AND (" . implode(' OR ', $condiciones) . ")";
+		$builder = $this->db->table('contactos');
+		$builder->where('invitaciones', 1);
 
-		$db = \Config\Database::connect();
+		if ($condiciones !== []) {
+			$builder->groupStart();
+			foreach ($condiciones as $index => $condicion) {
+				[$campo] = explode(' ', $condicion);
+				if ($index === 0) {
+					$builder->where($campo, 1);
+				} else {
+					$builder->orWhere($campo, 1);
+				}
+			}
+			$builder->groupEnd();
+		} else {
+			$builder->where('id', 0);
+		}
 
-		$sql = "SELECT * FROM contactos
-				WHERE $consulta";
-
-		$query     = $db->query($sql);
+		$query     = $builder->get();
 		$contactos = $query->getResultObject();
 
 		foreach ($contactos as $contacto) {
@@ -139,9 +185,9 @@ class Eventos extends BaseController
 			$cuerpo = str_replace('{{poblacion}}', $contacto->poblacion, $cuerpo);
 			$cuerpo = str_replace('{{provincia}}', $contacto->provincia, $cuerpo);
 
-			$cuerpo = str_replace('{{baja_emails}}', base_url('bajasxpiecorreo/emails/' . $contacto->id), $cuerpo);
-			$cuerpo = str_replace('{{baja_invitaciones}}', base_url('bajasxpiecorreo/invitaciones/' . $contacto->id), $cuerpo);
-			$cuerpo = str_replace('{{baja_total}}', base_url('bajasxpiecorreo/total/' . $contacto->id), $cuerpo);
+			$cuerpo = str_replace('{{baja_emails}}', $this->buildUnsubscribeUrl((int) $contacto->id, 'emails'), $cuerpo);
+			$cuerpo = str_replace('{{baja_invitaciones}}', $this->buildUnsubscribeUrl((int) $contacto->id, 'invitaciones'), $cuerpo);
+			$cuerpo = str_replace('{{baja_total}}', $this->buildUnsubscribeUrl((int) $contacto->id, 'total'), $cuerpo);
 
 			$email->setMessage($cuerpo);
 
@@ -196,7 +242,7 @@ class Eventos extends BaseController
 
 		$data = [
 			'titulo'    => 'Resultado envío masivo',
-			'asunto'    => '<small>Invitaciónes a</small><br>' . $evento->titulo,
+			'asunto'    => '<small>Invitaciones a</small><br>' . $evento->titulo,
 			'correctos' => $correctos,
 			'errores'   => $errores,
 			'repetidos' => $repetidos,

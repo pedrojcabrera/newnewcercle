@@ -5,19 +5,43 @@ namespace App\Controllers\Admin;
 use App\Models\UsuariosModel;
 
 use App\Controllers\BaseController;
-use CodeIgniter\HTTP\ResponseInterface;
 
 class Usuarios extends BaseController
 {
 
     public $model;
 
+    private function construirPayloadUsuario(array $post, ?int $id = null, bool $escaparContenido = false): array
+    {
+        $payload = [
+            'user'      => trim((string) ($post['usuario'] ?? '')),
+            'nombre'    => trim((string) ($post['nombre'] ?? '')),
+            'correo'    => trim((string) ($post['correo'] ?? '')),
+            'telefono'  => trim((string) ($post['telefono'] ?? '')),
+            'enlaces'   => trim((string) ($post['enlaces'] ?? '')),
+            'web'       => trim((string) ($post['web'] ?? '')),
+            'texto'     => (string) ($post['texto'] ?? ''),
+            'admin'     => isset($post['admin']) ? 1 : 0,
+        ];
+
+        if ($escaparContenido) {
+            $payload['enlaces'] = esc($payload['enlaces']);
+            $payload['texto'] = esc($payload['texto']);
+        }
+
+        if ($id !== null) {
+            $payload['id'] = $id;
+        }
+
+        return $payload;
+    }
+
 
     public function __construct()
     {
         $this->model = new UsuariosModel;
     }
-    
+
     public function lista(){
         $usuarios = $this->model->OrderBy('nombre')->findAll();
         $data = [
@@ -41,29 +65,20 @@ class Usuarios extends BaseController
             'password'  => 'required',
             'repetir'   => 'matches[password]',
             'correo'    => 'valid_email',
-            'web'       => 'valid_url',
+            'web'       => 'permit_empty|valid_url',
         ];
         if(!$this->validate($reglas)) {
-            dd($this->validator->listErrors());
             return redirect()->to(base_url('control/usuarios/nuevo'))->withInput();
         }
         $post = $this->request->getPost();
 
-        $admin = isset($post['admin']) ? 1 : 0;
-        $this->model->insert([
-            'user'      => trim($post['usuario']),
-            'pass'      => password_hash($post['password'], PASSWORD_DEFAULT),
-            'nombre'    => trim($post['nombre']),
-            'correo'    => trim($post['correo']),
-            'telefono'  => trim($post['telefono']),
-            'enlaces'   => esc(trim($post['enlaces'])),
-            'web'       => trim($post['web']),
-            'texto'     => esc($post['texto']),
-            'admin'     => $admin,
-        ]);
+        $datos = $this->construirPayloadUsuario($post, null, true);
+        $datos['pass'] = password_hash((string) ($post['password'] ?? ''), PASSWORD_DEFAULT);
+
+        $this->model->insert($datos);
         $id = $this->model->getInsertID();
         $this->_upload($id);
-        
+
         return redirect()->to(base_url('control/usuarios'));
     }
 
@@ -79,9 +94,9 @@ class Usuarios extends BaseController
     }
 
     public function update($id = null){
-        
+
         $reglas = [
-            'usuario'   => 'required',
+            'usuario'   => 'required|is_unique[usuarios.user,id,'.$id.']',
             'nombre'    => 'required',
             'repetir'   => 'matches[password]',
             'correo'    => 'valid_email',
@@ -101,23 +116,13 @@ class Usuarios extends BaseController
         }
 
         $post = $this->request->getPost();
-        $admin = isset($post['admin']) ? 1 : 0;
-        $datos = [
-            'id'        => $id,
-            'user'      => trim($post['usuario']),
-            'nombre'    => trim($post['nombre']),
-            'correo'    => trim($post['correo']),
-            'telefono'  => trim($post['telefono']),
-            'enlaces'   => trim($post['enlaces']),
-            'web'       => trim($post['web']),
-            'texto'     => $post['texto'],
-            'admin'     => $admin
-        ];
+        $password = trim((string) ($post['password'] ?? ''));
+        $datos = $this->construirPayloadUsuario($post, (int) $id, false);
 
-        if(!empty($pass)) {
-            $datos['pass'] = password_hash($post['password'], PASSWORD_DEFAULT);
+        if($password !== '') {
+            $datos['pass'] = password_hash($password, PASSWORD_DEFAULT);
         }
-        
+
         if(isset($post['borrar_foto'])){
             $destino = FCPATH.'fotosUsuarios/';
             $fotoUser = $id.'.jpg';
@@ -125,14 +130,14 @@ class Usuarios extends BaseController
                 unlink($destino.$fotoUser);
             }
         }
-        
+
         $this->model->save($datos);
-        
+
         if($imagen = $this->request->getFile('foto')){
             $this->_upload($id);
         }
-        return $this->lista();
-        //return redirect()->to(base_url('control/usuarios'));
+
+        return redirect()->to(base_url('control/usuarios'));
     }
 
     public function delete($id = null){
@@ -141,7 +146,8 @@ class Usuarios extends BaseController
             unlink($fotoUser);
         }
         $this->model->delete($id);
-        return $this->lista();
+
+        return redirect()->to(base_url('control/usuarios'));
     }
 
     private function _upload($id = null) {

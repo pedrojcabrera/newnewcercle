@@ -5,19 +5,32 @@ namespace App\Controllers\Admin;
 use App\Models\TiposEventosModel;
 
 use App\Controllers\BaseController;
-use CodeIgniter\HTTP\ResponseInterface;
 
 class Tipos extends BaseController
 {
 
     public $model;
 
+    private function construirPayloadTipoEvento(array $post, ?int $id = null): array
+    {
+        $payload = [
+            'eventonombre'  => $post['eventonombre'] ?? '',
+            'eventotipo'    => $post['eventotipo'] ?? '',
+        ];
+
+        if ($id !== null) {
+            $payload['id'] = $id;
+        }
+
+        return $payload;
+    }
+
 
     public function __construct()
     {
         $this->model = new TiposEventosModel;
     }
-    
+
     public function lista(){
         $tipos = $this->model->findAll();
         $data = [
@@ -39,17 +52,14 @@ class Tipos extends BaseController
             'eventonombre'  => 'required|is_unique[tiposeventos.eventonombre]',
             'eventotipo'    => 'required|is_unique[tiposeventos.eventotipo]',
         ];
-        
+
         if(!$this->validate($reglas)) {
             return redirect()->to(base_url('control/tipos/nuevo'))->withInput();
         }
 
         $post = $this->request->getPost();
 
-        $this->model->insert([
-            'eventonombre'  => $post['eventonombre'],
-            'eventotipo'    => $post['eventotipo'],
-        ]);
+        $this->model->insert($this->construirPayloadTipoEvento($post));
 
         return redirect()->to(base_url('control/tipos'));
     }
@@ -59,7 +69,7 @@ class Tipos extends BaseController
         $data = [
             'titulo'    => 'Edición de Tipos de Evento',
             'id'        => $id,
-            'tipo'      => $tipo, 
+            'tipo'      => $tipo,
         ];
         return view('admin/tipos/editar', $data);
     }
@@ -75,13 +85,9 @@ class Tipos extends BaseController
         }
 
         $post = $this->request->getPost();
-        
-        $datos = [
-            'id'            => $id,
-            'eventonombre'  => $post['eventonombre'],
-            'eventotipo'    => $post['eventotipo'],
-        ];
-        
+
+        $datos = $this->construirPayloadTipoEvento($post, (int) $id);
+
         $this->model->save($datos);
 
         return redirect()->to(base_url('control/tipos'));

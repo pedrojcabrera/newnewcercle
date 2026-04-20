@@ -41,7 +41,7 @@
             required>
       </div>
       <div class="mb-3">
-         <input type="telefono" class="form-control" name="telefono" id="telefono" placeholder="Teléfono" required>
+         <input type="tel" class="form-control" name="telefono" id="telefono" placeholder="Teléfono" required>
       </div>
       <div class="mb-3">
          <textarea class="form-control" name="mensaje" id="mensaje" rows="3" placeholder="Mensaje / Comentarios"
@@ -49,7 +49,7 @@
       </div>
       <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
       <button type="submit" id="enviar" value="submit" class="btn btn-primary">Enviar</button>
-      <small class="form-text text-muted d-block mt-2">Este sitio está protegido por reCAPTCHA de Google. Se aplican la <a href="https://policies.google.com/privacy" target="_blank">Política de Privacidad</a> y los <a href="https://policies.google.com/terms" target="_blank">Términos de Servicio</a>.</small>
+      <small class="form-text text-muted d-block mt-2">Este sitio está protegido por reCAPTCHA de Google. Se aplican la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidad</a> y los <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Términos de Servicio</a>.</small>
 
       <?=form_close()?>
 

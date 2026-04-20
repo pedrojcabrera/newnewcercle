@@ -7,23 +7,20 @@
 
    <?php
     $user     = $artista->id_user;
-    $foto     = 'sinfoto.jpg';
     $fotoUser = $user . '.jpg';
-    if (file_exists('fotosUsuarios/' . $fotoUser)) {
-     $foto = $fotoUser;
-    }
    ?>
 
    <figure>
       <a href="<?php echo base_url('pinturas/' . $user)?>">
-         <img src=" <?php echo base_url('fotosUsuarios/' . $foto)?>"
-            title="Ver la exposición de <?php echo $nombres[$user]?>" alt="">
+         <img src="<?php echo base_url('fotosUsuarios/' . $fotoUser)?>"
+            onerror="this.onerror=null;this.src='<?= base_url('fotosUsuarios/sinfoto.jpg') ?>'"
+            title="Ver la exposicion de <?php echo esc($nombres[$user])?>" alt="Foto de <?php echo esc($nombres[$user]) ?>">
       </a>
 
       <figcaption>
-         <?php echo $nombres[$user]?>
+         <?php echo esc($nombres[$user])?>
          <br>
-         <?php echo $cantidad[$user] . ' Obras'?>
+         <?php echo esc($cantidad[$user]) . ' Obras'?>
       </figcaption>
    </figure>
 

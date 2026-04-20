@@ -18,13 +18,7 @@
                         <label for="texto" class="form-label">Texto</label>
                         <textarea class="form-control" name="texto" id="texto"
                             rows="15"><?php echo $correo->texto; ?></textarea>
-                        <script>
-                        CKEDITOR.replace("texto", {
-                            language: 'es',
-                            versionCheck: false,
-
-                        });
-                        </script>
+                        
                     </div>
                 </div>
                 <div class="d-flex justify-content-between mx-3 mt-3">

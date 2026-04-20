@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Traits\ConEventoQueryTrait;
 use CodeIgniter\Model;
 
 class InvitadosModel extends Model
 {
+    use ConEventoQueryTrait;
+
     protected $table      = 'invitados';  // Nombre de la tabla en MySQL
     protected $primaryKey = 'id';         // Clave primaria de la tabla
     protected $returnType = 'object';
@@ -29,9 +32,15 @@ class InvitadosModel extends Model
 
     // Método para obtener el título del evento
     public function invitadosConEvento() {
-        return $this->select('invitados.id AS id, invitados.nombre AS nombre, invitados.apellidos AS apellidos, invitados.email AS email, invitados.telefono AS telefono, invitados.fecha AS fecha, invitados.id_evento AS id_evento, neventos.titulo AS titulo')
-                    ->join('neventos', 'neventos.id = id_evento')
-                    ->OrderBy('fecha','DESC')
-                    ->findAll();
+        return $this->fetchConEvento([
+            'invitados.id AS id',
+            'invitados.nombre AS nombre',
+            'invitados.apellidos AS apellidos',
+            'invitados.email AS email',
+            'invitados.telefono AS telefono',
+            'invitados.fecha AS fecha',
+            'invitados.id_evento AS id_evento',
+            'neventos.titulo AS titulo',
+        ]);
     }
 }

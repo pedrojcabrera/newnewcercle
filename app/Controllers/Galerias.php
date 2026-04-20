@@ -7,7 +7,7 @@ use App\Models\GaleriasModel;
 class Galerias extends BaseController
 {
     private $galeriaModel;
-    
+
     private $id;
     private $db;
     private $sql;
@@ -23,26 +23,22 @@ class Galerias extends BaseController
 
     public function lista(): string
     {
-        $this->sql->select('galerias.id_user, usuarios.nombre')->distinct();
+        $this->sql = $this->db->table('galerias');
+        $this->sql->select('galerias.id_user, usuarios.nombre, COUNT(galerias.id) AS total_obras');
         $this->sql->join('usuarios', 'usuarios.id = id_user');
+        $this->sql->groupBy('galerias.id_user, usuarios.nombre');
         $this->sql->orderby('id_user' , 'ASC');
         $query = $this->sql->get();
 
         $artistas = $query->getResult();
+        $nombres = [];
+        $cantidad = [];
 
-        if(count($artistas) > 0) {
-
+        if (count($artistas) > 0) {
             foreach ($artistas as $artista) {
-
-                $this->sql->select('*');
-                $this->sql->where('id_user = ' , $artista->id_user);
-                $query = $this->sql->get();
-                
-                $obras[$artista->id_user] = $query->getResult();
                 $nombres[$artista->id_user] = $artista->nombre;
-                $cantidad[$artista->id_user]=count($obras[$artista->id_user]);
+                $cantidad[$artista->id_user] = (int) ($artista->total_obras ?? 0);
             }
-            
         }
 
         $data = [
@@ -55,14 +51,19 @@ class Galerias extends BaseController
         return view('galerias/lista',$data);
     }
 
-    public function show($id): string
+    public function show($id)
     {
+        $this->sql = $this->db->table('galerias');
         $this->sql->select('*, usuarios.nombre, galerias.id as cuadro');
         $this->sql->join('usuarios', 'usuarios.id = id_user');
         $this->sql->where('id_user',$id);
         $query = $this->sql->get();
 
         $obras = $query->getResult();
+
+        if (count($obras) === 0) {
+            return redirect()->to(base_url('pinturas'));
+        }
 
         $data = [
             'titulo'  => 'Galería',

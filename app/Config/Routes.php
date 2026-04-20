@@ -28,18 +28,20 @@ $routes->get('login', 'Admin::login');
 $routes->get('logout', 'Admin::logout');
 $routes->post('validar', 'Admin::validar');
 
-$routes->get('migaleria', 'Galeristas::index', ['filter' => 'authGals']);
-$routes->get('galeristas', 'Galeristas::index', ['filter' => 'authGals']);
-$routes->get('galeristas/lista', 'Galeristas::lista');
-$routes->get('galeristas/cancelar', 'Galeristas::cancelar');
-$routes->get('galeristas/login', 'Galeristas::login');
-$routes->post('galeristas/validar', 'Galeristas::validar');
-$routes->get('galeristas/logout', 'Galeristas::logout');
-$routes->get('galeristas/nuevo', 'Galeristas::nuevo');
-$routes->post('galeristas/crear', 'Galeristas::crear');
-$routes->get('galeristas/editar/(:num)', 'Galeristas::editar/$1');
-$routes->put('galeristas/modificar/(:num)', 'Galeristas::modificar/$1');
-$routes->get('galeristas/quitar/(:num)', 'Galeristas::quitar/$1');
+$routes->get('migaleria', '\App\Controllers\Galeristas\AuthController::index', ['filter' => 'authGals']);
+$routes->group('galeristas', ['namespace' => 'App\Controllers\Galeristas'], function ($routes) {
+    $routes->get('', 'AuthController::index', ['filter' => 'authGals']);
+    $routes->get('login', 'AuthController::login');
+    $routes->post('validar', 'AuthController::validar');
+    $routes->get('logout', 'AuthController::logout');
+    $routes->get('lista', 'ObrasController::lista', ['filter' => 'authGals']);
+    $routes->get('cancelar', 'ObrasController::cancelar', ['filter' => 'authGals']);
+    $routes->get('nuevo', 'ObrasController::nuevo', ['filter' => 'authGals']);
+    $routes->post('crear', 'ObrasController::crear', ['filter' => 'authGals']);
+    $routes->get('editar/(:num)', 'ObrasController::editar/$1', ['filter' => 'authGals']);
+    $routes->put('modificar/(:num)', 'ObrasController::modificar/$1', ['filter' => 'authGals']);
+    $routes->get('quitar/(:num)', 'ObrasController::quitar/$1', ['filter' => 'authGals']);
+});
 
 $routes->get('dashboard', 'Admin::dashboard', ['filter' => 'auth']);
 
@@ -97,7 +99,6 @@ $routes->group('control', ['namespace' => 'App\Controllers\Admin', 'filter' => '
     $routes->get('eventos/cartear/(:num)', 'Eventos::sendmail/$1');
     $routes->get('eventos/invitados/(:num)', 'Eventos::listaInvitados/$1');
     $routes->post('inscribirse/(:num)/(:num)', 'Eventos::inscribirInvitado/$1/$2');
-    $routes->get('inscribirse/(:num)/(:num)', 'Eventos::inscribirInvitado/$1/$2');
     $routes->delete('quitarInvitado/(:num)', 'Eventos::quitarInvitado/$1');
     $routes->get('inscritos/(:num)', 'Eventos::listaInscritos/$1');
     $routes->get('inscripcionManual', 'Eventos::inscripcionManual');
@@ -112,7 +113,7 @@ $routes->group('control', ['namespace' => 'App\Controllers\Admin', 'filter' => '
 
 
     $routes->get('fotos/(:num)', 'Eventos::fotos/$1');
-    $routes->get('fotos/(:num)/(:any)', 'Eventos::eliminarFoto/$1/$2');
+    $routes->delete('fotos/(:num)/(:segment)', 'Eventos::eliminarFoto/$1/$2');
     $routes->post('fotos/(:num)', 'Eventos::agregarFotos/$1');
 
     $routes->get('listarInscritos/(:num)', 'Pdf::listarInscritos/$1');
@@ -126,11 +127,9 @@ $routes->group('control', ['namespace' => 'App\Controllers\Admin', 'filter' => '
 
 $routes->group('bajasxpiecorreo', ['namespace' => 'App\Controllers\Admin'], function ($routes) {
 
-    $routes->get('emails/(:num)', 'Autobajas::emails/$1');
-    $routes->get('invitaciones/(:num)', 'Autobajas::invitaciones/$1');
-    $routes->get('total/(:num)', 'Autobajas::bajaTotal/$1');
+    $routes->get('emails/(:num)/(:segment)', 'Autobajas::emails/$1/$2');
+    $routes->get('invitaciones/(:num)/(:segment)', 'Autobajas::invitaciones/$1/$2');
+    $routes->get('total/(:num)/(:segment)', 'Autobajas::bajaTotal/$1/$2');
 });
 
 $routes->get('/host', 'Pruebas::informa_del_host');
-
-$routes->get('(:any)', 'Home::index');

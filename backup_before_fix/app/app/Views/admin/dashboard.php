@@ -19,8 +19,6 @@
                href="<?php echo base_url('recursos/DataTables/datatables.min.css', $_SERVER['REQUEST_SCHEME']); ?>">
            <link rel="stylesheet" type="text/css"
                href="<?php echo base_url('recursos/styleMenu.css', $_SERVER['REQUEST_SCHEME']); ?>">
-           <!-- CK.Editor -->
-           <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
            <?php echo
        "<style>
             body {

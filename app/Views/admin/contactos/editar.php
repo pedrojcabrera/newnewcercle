@@ -9,43 +9,48 @@
             <div class="container">
                 <div class="card-body">
                     <div class="mb-3">
+                        <?php $errorNombre = validation_show_error('nombre'); ?>
                         <label for="nombre" class="form-label">Nombre:</label>
-                        <input type="text" class="form-control" name="nombre" id="nombre"
+                        <input type="text" class="form-control<?php echo $errorNombre ? ' is-invalid' : ''; ?>" name="nombre" id="nombre"
                             value="<?php echo $contacto->nombre; ?>" placeholder="Nombre" required>
-                        <div class="linea_msg_error">
-                            <?php echo validation_show_error('nombre'); ?>
+                        <div class="invalid-feedback">
+                            <?php echo $errorNombre; ?>
                         </div>
                     </div>
                     <div class="mb-3">
+                        <?php $errorApellidos = validation_show_error('apellidos'); ?>
                         <label for="apellidos" class="form-label">Apellidos:</label>
-                        <input type="text" class="form-control" name="apellidos" id="apellidos"
+                        <input type="text" class="form-control<?php echo $errorApellidos ? ' is-invalid' : ''; ?>" name="apellidos" id="apellidos"
                             value="<?php echo $contacto->apellidos; ?>" placeholder="Apellidos" required>
-                        <div class="linea_msg_error">
-                            <?php echo validation_show_error('apellidos'); ?>
+                        <div class="invalid-feedback">
+                            <?php echo $errorApellidos; ?>
                         </div>
                     </div>
                     <div class="mb-3">
+                        <?php $errorCorreo = validation_show_error('correo'); ?>
                         <label for="correo" class="form-label">Correo</label>
-                        <input type="email" class="form-control" name="correo" id="correo"
+                        <input type="email" class="form-control<?php echo $errorCorreo ? ' is-invalid' : ''; ?>" name="correo" id="correo"
                             value="<?php echo $contacto->email; ?>" placeholder="Correo">
-                        <div class="linea_msg_error">
-                            <?php echo validation_show_error('correo'); ?>
+                        <div class="invalid-feedback">
+                            <?php echo $errorCorreo; ?>
                         </div>
                     </div>
                     <div class="mb-3">
+                        <?php $errorDni = validation_show_error('dni'); ?>
                         <label for="dni" class="form-label">DNI o NIF</label>
-                        <input type="text" class="form-control" name="dni" id="dni" value="<?php echo $contacto->dni; ?>"
+                        <input type="text" class="form-control<?php echo $errorDni ? ' is-invalid' : ''; ?>" name="dni" id="dni" value="<?php echo $contacto->dni; ?>"
                             placeholder="DNI o NIF">
-                        <div class="linea_msg_error">
-                            <?php echo validation_show_error('dni'); ?>
+                        <div class="invalid-feedback">
+                            <?php echo $errorDni; ?>
                         </div>
                     </div>
                     <div class="mb-3">
+                        <?php $errorTelefono = validation_show_error('telefono'); ?>
                         <label for="telefono" class="form-label">Teléfono</label>
-                        <input type="text" class="form-control" name="telefono" id="telefono"
+                        <input type="text" class="form-control<?php echo $errorTelefono ? ' is-invalid' : ''; ?>" name="telefono" id="telefono"
                             value="<?php echo $contacto->telefono; ?>" placeholder="Teléfono">
-                        <div class="linea_msg_error">
-                            <?php echo validation_show_error('telefono'); ?>
+                        <div class="invalid-feedback">
+                            <?php echo $errorTelefono; ?>
                         </div>
                     </div>
                 </div>
@@ -133,12 +138,10 @@
                 </div>
             </div>
             <div class="d-flex justify-content-between mx-3 mt-3">
-                <a name="cancelar" id="cancelar" class="btn btn-success btn-md bi-box-arrow-left"
+                <a name="cancelar" id="cancelar" class="btn btn-success btn-md"
                     href="<?php echo base_url('control/contactos'); ?>" role="button"
-                    title="Cancelar">
-                    Cancelar</a>
-                <button type="submit" class="btn btn-primary btn-md bi-person-check-fill" title="Modificar">
-                    Modificar</button>
+                    title="Cancelar"><i class="bi bi-box-arrow-left"></i> Cancelar</a>
+                <button type="submit" class="btn btn-primary btn-md" title="Modificar"><i class="bi bi-floppy-fill"></i> Guardar cambios</button>
             </div>
         </div>
 

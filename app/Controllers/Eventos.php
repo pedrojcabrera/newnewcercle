@@ -30,11 +30,15 @@ class Eventos extends BaseController
 
     public function lista(): string
     {
-        $eventos = $this->eventoModel->getListaEventos();
+        $page = (int) ($this->request->getGet('page') ?? 1);
+        $paginacion = $this->eventoModel->getListaEventosPaginada($page, 24);
 
         $data = [
             'titulo'    => 'Histórico de Eventos',
-            'eventos'   => $eventos
+            'eventos'   => $paginacion['eventos'],
+            'page'      => $paginacion['page'],
+            'totalPages'=> $paginacion['totalPages'],
+            'total'     => $paginacion['total'],
         ];
 
         return view('eventos/lista', $data);

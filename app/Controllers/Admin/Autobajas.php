@@ -8,13 +8,53 @@ class Autobajas extends BaseController
 {
     public $model;
 
+    private function getUnsubscribeSecret(): ?string
+    {
+        $secret = trim((string) env('unsubscribeTokenSecret'));
+        if ($secret !== '') {
+            return $secret;
+        }
+
+        $secret = trim((string) env('encryption.key'));
+        if ($secret !== '') {
+            return $secret;
+        }
+
+        return null;
+    }
+
     public function __construct()
     {
         $this->model = new ContactosModel;
     }
 
-    public function emails($id = null)
+    private function isValidToken(int $id, string $scope, ?string $token): bool
     {
+        if ($token === null || $token === '') {
+            return false;
+        }
+
+        $secret = $this->getUnsubscribeSecret();
+        if ($secret === null) {
+            log_message('critical', 'No se puede validar token de baja: falta unsubscribeTokenSecret y encryption.key.');
+            return false;
+        }
+
+        $expected = hash_hmac('sha256', $scope . '|' . $id, $secret);
+
+        return hash_equals($expected, $token);
+    }
+
+    public function emails($id = null, $token = null)
+    {
+        if (!$this->isValidToken((int) $id, 'emails', $token)) {
+            return view('admin/autobajas/resultado_gestion', [
+                'titulo' => 'Solicitud de baja de emails',
+                'contacto' => null,
+                'mensaje' => "<p>La solicitud no es válida o ha caducado. Si desea gestionar la baja, contacte con la secretaría del Cercle d'Art Foios.</p>",
+            ]);
+        }
+
         $contacto = $this->model->find($id);
         $realizarCambios = false;
 
@@ -51,8 +91,16 @@ class Autobajas extends BaseController
         return view('admin/autobajas/resultado_gestion', $data);
     }
 
-    public function invitaciones($id = null)
+    public function invitaciones($id = null, $token = null)
     {
+        if (!$this->isValidToken((int) $id, 'invitaciones', $token)) {
+            return view('admin/autobajas/resultado_gestion', [
+                'titulo' => 'Solicitud de baja de emails',
+                'contacto' => null,
+                'mensaje' => "<p>La solicitud no es válida o ha caducado. Si desea gestionar la baja, contacte con la secretaría del Cercle d'Art Foios.</p>",
+            ]);
+        }
+
         $contacto = $this->model->find($id);
         $realizarCambios = false;
 
@@ -89,8 +137,16 @@ class Autobajas extends BaseController
         return view('admin/autobajas/resultado_gestion', $data);
     }
 
-    public function bajaTotal($id = null)
+    public function bajaTotal($id = null, $token = null)
     {
+        if (!$this->isValidToken((int) $id, 'total', $token)) {
+            return view('admin/autobajas/resultado_gestion', [
+                'titulo' => 'Solicitud de baja de emails',
+                'contacto' => null,
+                'mensaje' => "<p>La solicitud no es válida o ha caducado. Si desea gestionar la baja, contacte con la secretaría del Cercle d'Art Foios.</p>",
+            ]);
+        }
+
         $contacto = $this->model->find($id);
         $realizarCambios = false;
 

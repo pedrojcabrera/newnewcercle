@@ -5,7 +5,6 @@ namespace App\Controllers\Admin;
 use App\Models\CercledartfoiosModel;
 
 use App\Controllers\BaseController;
-use CodeIgniter\HTTP\ResponseInterface;
 
 class Sistema extends BaseController
 {
@@ -18,7 +17,7 @@ class Sistema extends BaseController
     {
         $this->model = new CercledartfoiosModel;
     }
-    
+
     public function edit($id = 1){
         $sistema = $this->model->asObject()->find($id);
         $data = [
@@ -28,9 +27,9 @@ class Sistema extends BaseController
             'banner'    => $sistema->pinterest,
         ];
 
-        
+
         $this->session->pinterest = $sistema->pinterest;
-        
+
         return view('admin/sistema/editar', $data);
     }
 
@@ -55,20 +54,21 @@ class Sistema extends BaseController
         $datos = [
             'id'        => $id,
             'noticia'   => trim($post['noticia']),
-            'texto'     => trim($post['texto']),
+            'texto'     => $post['texto'],
             'direccion' => trim($post['direccion']),
             'correo'    => trim($post['correo']),
-            'texto'     => $post['texto'],
+            'facebook'  => trim($post['facebook']),
+            'youtube'   => trim($post['youtube']),
+            'instagram' => trim($post['instagram']),
+            'elcaballete' => trim($post['elcaballete']),
             'visible'   => $visible,
         ];
 
         $imagen = $this->request->getFile('banner');
-        
-        $destino = FCPATH.'recursos/imagenes/';
-        
-        if($imagen) {
 
-            $ext = $imagen->getClientExtension();
+        $destino = FCPATH.'recursos/imagenes/';
+
+        if($imagen && $imagen->isValid() && !$imagen->hasMoved() && $imagen->getClientName() !== '') {
             $banner = $imagen->getRandomName(); //.'.'.$ext;
             $banner_antiguo = $post['pinterest'];
             if(!empty($banner_antiguo) && file_exists($destino.$banner_antiguo)) {
@@ -76,10 +76,10 @@ class Sistema extends BaseController
             }
             $datos['pinterest'] = $banner;
         }
-        
+
         $this->model->save($datos);
-        
-        if($imagen){
+
+        if($imagen && $imagen->isValid() && !$imagen->hasMoved() && $imagen->getClientName() !== ''){
             $this->_upload($imagen,$destino,$banner);
         }
 

@@ -2,7 +2,7 @@
 <?= $this->section('contenido')?>
 
 <div class="row col-8 my-3 mx-auto">
-    <h1 class='text-center'> <?=$asunto?> </h1>
+    <h1 class='text-center'> <?= $asunto ?> </h1>
 
     <?php if(count($correctos)>0): ?>
     <div class="card col-8 my-2 mx-auto">
@@ -77,9 +77,8 @@
     <?php endif; ?>
 
     <div class="mt-3 text-end">
-        <a name="cancelar" id="cancelar" class="btn btn-success btn-md bi-box-arrow-left"
-            href="<?=base_url('control/eventos')?>" role="button" title="Cancelar">
-            Volver</a>
+        <a name="cancelar" id="cancelar" class="btn btn-success btn-md"
+            href="<?=base_url('control/eventos')?>" role="button" title="Volver"><i class="bi bi-box-arrow-left"></i> Cancelar</a>
     </div>
 
 </div>

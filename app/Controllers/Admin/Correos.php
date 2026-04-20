@@ -11,6 +11,76 @@ class Correos extends BaseController
 {
     public $model;
 
+    private function construirPayloadCorreo(array $post, ?int $id = null): array
+    {
+        $payload = [
+            'asunto' => $post['asunto'] ?? '',
+            'texto'  => $post['texto'] ?? '',
+        ];
+
+        if ($id !== null) {
+            $payload['id'] = $id;
+        }
+
+        return $payload;
+    }
+
+    private function sanitizeCorreoHtml(?string $html): string
+    {
+        $html = trim((string) $html);
+        if ($html == '') {
+            return '';
+        }
+
+        // Mantiene formato HTML enriquecido y elimina elementos de riesgo.
+        $allowedTags = '<p><br><strong><b><em><i><u><ul><ol><li><a><span><div><h1><h2><h3><h4><h5><h6><blockquote><hr><img><table><thead><tbody><tr><th><td>';
+        $safe = strip_tags($html, $allowedTags);
+
+        // Elimina atributos inline peligrosos como onclick, onerror, etc.
+        $safe = preg_replace('/\son[a-z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/i', '', $safe) ?? $safe;
+
+        // Bloquea protocolos javascript: en href/src.
+        $safe = preg_replace('/\s(href|src)\s*=\s*("|\')\s*javascript:[^"\']*("|\')/i', ' $1="#"', $safe) ?? $safe;
+
+        return $safe;
+    }
+
+    private function getUnsubscribeSecret(): ?string
+    {
+        $secret = trim((string) env('unsubscribeTokenSecret'));
+        if ($secret !== '') {
+            return $secret;
+        }
+
+        $secret = trim((string) env('encryption.key'));
+        if ($secret !== '') {
+            return $secret;
+        }
+
+        return null;
+    }
+
+    private function buildUnsubscribeToken(int $contactoId, string $scope): ?string
+    {
+        $secret = $this->getUnsubscribeSecret();
+        if ($secret === null) {
+            return null;
+        }
+
+        return hash_hmac('sha256', $scope . '|' . $contactoId, $secret);
+    }
+
+    private function buildUnsubscribeUrl(int $contactoId, string $scope): string
+    {
+        $token = $this->buildUnsubscribeToken($contactoId, $scope);
+        if ($token === null) {
+            log_message('critical', 'No se pudo generar token de baja: falta unsubscribeTokenSecret y encryption.key.');
+            return base_url('contactar');
+        }
+
+        return base_url('bajasxpiecorreo/' . $scope . '/' . $contactoId . '/' . $token);
+    }
+
     public function __construct()
     {
         $this->model = new CorreosModel;
@@ -19,6 +89,12 @@ class Correos extends BaseController
     public function lista()
     {
         $correos = $this->model->orderBy('fecha', 'DESC')->findAll();
+
+        foreach ($correos as &$correo) {
+            $correo->texto_sanitizado = $this->sanitizeCorreoHtml($correo->texto ?? '');
+        }
+        unset($correo);
+
         $data = [
             'titulo'  => 'Correos predefinidos',
             'correos' => $correos,
@@ -46,11 +122,7 @@ class Correos extends BaseController
         }
 
         $post = $this->request->getPost();
-
-        $this->model->insert([
-            'texto'  => $post['texto'],
-            'asunto' => $post['asunto'],
-        ]);
+        $this->model->insert($this->construirPayloadCorreo($post));
 
         return redirect()->to(base_url('control/correos'));
     }
@@ -79,11 +151,7 @@ class Correos extends BaseController
 
         $post = $this->request->getPost();
 
-        $datos = [
-            'id'     => $id,
-            'asunto' => $post['asunto'],
-            'texto'  => $post['texto'],
-        ];
+        $datos = $this->construirPayloadCorreo($post, (int) $id);
 
         $this->model->save($datos);
 
@@ -145,29 +213,29 @@ class Correos extends BaseController
         $db = \Config\Database::connect();
         $builder = $db->table('contactos');
 
-        $condiciones = [];
-        if (isset($post['socio'])) {
-            $condiciones[] = "socio = 1";
-        }
-        if (isset($post['alumno'])) {
-            $condiciones[] = "alumno = 1";
-        }
-        if (isset($post['pdalumno'])) {
-            $condiciones[] = "pdalumno = 1";
-        }
-        if (isset($post['pintor'])) {
-            $condiciones[] = "pintor = 1";
-        }
-        if (isset($post['dtaller'])) {
-            $condiciones[] = "dtaller = 1";
-        }
-        if (isset($post['amigo'])) {
-            $condiciones[] = "amigo = 1";
+        $grupos = [];
+        foreach (['socio', 'alumno', 'pdalumno', 'pintor', 'dtaller', 'amigo'] as $grupo) {
+            if (isset($post[$grupo])) {
+                $grupos[] = $grupo;
+            }
         }
 
-        $consulta = "mailing = 1 AND (" . implode(' OR ', $condiciones) . ")";
+        if ($grupos === []) {
+            $mensaje_error = "Necesitas seleccionar al menos un grupo de destinatarios";
+            return redirect()->to(base_url('control/correos/cartear/' . $id))->with('mensaje_error', $mensaje_error);
+        }
 
-        $builder->where($consulta);
+        $builder->where('mailing', 1);
+        $builder->groupStart();
+        foreach ($grupos as $index => $grupo) {
+            if ($index === 0) {
+                $builder->where($grupo, 1);
+            } else {
+                $builder->orWhere($grupo, 1);
+            }
+        }
+        $builder->groupEnd();
+
         $query = $builder->get();
         $contactos = $query->getResultObject();
 
@@ -180,8 +248,10 @@ class Correos extends BaseController
         $errores = [];
         $correctos = [];
 
+        $correoHtmlSeguro = $this->sanitizeCorreoHtml($correo->texto ?? '');
+
         $plantilla = file_get_contents('recursos/plantillasmail/cabeceraMail.php');
-        $plantilla .= $correo->texto;
+        $plantilla .= $correoHtmlSeguro;
         $plantilla .= "<br>";
         $plantilla .= file_get_contents('recursos/plantillasmail/pieMail.php');
 
@@ -213,9 +283,9 @@ class Correos extends BaseController
             $cuerpo = str_replace('{{poblacion}}', $contacto->poblacion, $cuerpo);
             $cuerpo = str_replace('{{provincia}}', $contacto->provincia, $cuerpo);
 
-            $cuerpo = str_replace('{{baja_emails}}', base_url('bajasxpiecorreo/emails/' . $contacto->id), $cuerpo);
-            $cuerpo = str_replace('{{baja_invitaciones}}', base_url('bajasxpiecorreo/invitaciones/' . $contacto->id), $cuerpo);
-            $cuerpo = str_replace('{{baja_total}}', base_url('bajasxpiecorreo/total/' . $contacto->id), $cuerpo);
+            $cuerpo = str_replace('{{baja_emails}}', $this->buildUnsubscribeUrl((int) $contacto->id, 'emails'), $cuerpo);
+            $cuerpo = str_replace('{{baja_invitaciones}}', $this->buildUnsubscribeUrl((int) $contacto->id, 'invitaciones'), $cuerpo);
+            $cuerpo = str_replace('{{baja_total}}', $this->buildUnsubscribeUrl((int) $contacto->id, 'total'), $cuerpo);
 
             $email->setMessage($cuerpo);
 

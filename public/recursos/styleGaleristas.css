@@ -33,6 +33,40 @@ body {
     text-rendering: optimizeLegibility;
 }
 
+/* Mejor contraste de controles de formulario sobre fondos variables */
+input:not([type='hidden']):not([type='submit']):not([type='reset']):not([type='button']),
+select,
+textarea,
+.form-control,
+.form-select {
+    background-color: #ffffff;
+    border: 1px solid #b5bec8;
+    color: #1c2833;
+    box-shadow: 0 1px 2px rgba(22, 38, 52, 0.08);
+}
+
+input:not([type='hidden']):not([type='submit']):not([type='reset']):not([type='button']):focus,
+select:focus,
+textarea:focus,
+.form-control:focus,
+.form-select:focus {
+    background-color: #ffffff;
+    border-color: #bf6300;
+    box-shadow: 0 0 0 0.2rem rgba(191, 99, 0, 0.2);
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+    accent-color: #bf6300;
+    outline: 1px solid rgba(28, 40, 51, 0.34);
+    outline-offset: 1px;
+}
+
+input[type='file'] {
+    padding: 0.3rem;
+    border-radius: 0.35rem;
+}
+
 header {
     background-color: rgba(247, 248, 249, 1);
     padding: .4rem 0 0;
@@ -271,15 +305,15 @@ footer .copyrights {
         outline: thin solid silver;
         box-shadow: 2px 2px 5px;
         margin-bottom: 1rem;
-    
+
         img {
             width: 100%;
             outline: thin solid silver;
             outline-offset: -.5rem;
             outline-color: grey;
-            
+
         }
-    
+
         figcaption {
             display: inline-block;
             width: 100%;
@@ -291,13 +325,13 @@ footer .copyrights {
             font-weight: 400;
             font-style: normal;
         }
-    
+
         &:hover {
             outline-color: var(--hover-outline-color);
             outline-width: var(--hover-outline-width);
             border-radius: .5rem;
             cursor: pointer;
-        }    
+        }
     }
 
 }
@@ -328,15 +362,15 @@ footer .copyrights {
         outline: thin solid silver;
         box-shadow: 2px 2px 5px;
         margin-bottom: 2rem;
-    
+
         img {
             width: 100%;
             outline: thin solid silver;
             outline-offset: -.5rem;
             outline-color: grey;
-            
+
         }
-    
+
         figcaption {
             display: inline-block;
             width: 100%;
@@ -347,9 +381,9 @@ footer .copyrights {
             font-optical-sizing: auto;
             font-weight: 400;
             font-style: normal;
-    
+
         }
-    
+
         &:hover {
             outline-color: var(--hover-outline-color);
             outline-width: var(--hover-outline-width);
@@ -388,7 +422,7 @@ footer .copyrights {
     column-rule-color: black;
     background-color: #e9e9e9;
     border-radius: .3rem;
-    
+
     .fig_evento {
         margin: 1rem auto;
         width: 100%;
@@ -420,7 +454,7 @@ footer .copyrights {
                 width: 75%;
                 display: flex;
                 justify-content: space-around;
-                
+
                 a {
                     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
                     font-size: 1rem;
@@ -479,7 +513,7 @@ footer .copyrights {
 
         transform: scale(var(--escala, 1));
         transition: transform 0.25s;
-        
+
         &:hover {
             --escala: 1.05;
             z-index: 1000;
@@ -514,7 +548,7 @@ footer .copyrights {
     justify-content: center;
     align-items: center;
     margin: 0 auto;
-    
+
     .col_evento {
         max-width: 300px;
         outline: thin solid silver;
@@ -527,7 +561,7 @@ footer .copyrights {
             outline-offset: -.5rem;
             outline-color: grey;
         }
-    
+
         figcaption {
             display: inline-block;
             width: 100%;
@@ -539,14 +573,14 @@ footer .copyrights {
             font-weight: 400;
             font-style: normal;
         }
-    
+
         &:hover {
             outline-color: var(--hover-outline-color);
             outline-width: var(--hover-outline-width);
             border-radius: .5rem;
             cursor: pointer;
         }
-    
+
     }
 }
 
@@ -611,7 +645,7 @@ footer .copyrights {
 
 .imagen_cercle {
     text-align: center;
-    
+
     img {
         max-width: calc(100vw - 1rem);
     }
@@ -684,11 +718,11 @@ footer .copyrights {
     flex-wrap: wrap;
     justify-content: center;
     gap: 2rem;
-    
+
     figure {
         /* max-width: 140px; */
         text-align: center;
-        
+
         img {
             width: 8vh;
             border-radius: 50%;
@@ -749,17 +783,17 @@ footer .copyrights {
     img {
         width: 40%;
     }
-    
+
     h3 {
         color: #333;
     }
-    
+
 }
 
 .container-p {
     display: flex;
     gap: 1rem;
-    
+
     .card {
         display: flex;
         flex-direction: column;
@@ -779,6 +813,10 @@ footer .copyrights {
     border-top-right-radius: 0;
 }
 
+.obra-preview-trigger {
+    cursor: zoom-in;
+}
+
 .botones-pie {
     display: flex;
     justify-content: space-between;
@@ -788,3 +826,223 @@ footer .copyrights {
 .comentarios {
     font-style: italic;
 }
+
+/* -------------------------------------------- */
+/* Layout con sidebar (galeristas)              */
+/* -------------------------------------------- */
+
+.gal-shell {
+    display: flex;
+    min-height: 100vh;
+}
+
+.gal-sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: linear-gradient(180deg, #0b4f6c, #0a3d55);
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0.85rem 0.8rem;
+    position: sticky;
+    top: 0;
+    max-height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    z-index: 1035;
+}
+
+.gal-sidebar-brand {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.45rem 0.55rem;
+    border-radius: 0.8rem;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.8), rgba(231, 241, 249, 0.74));
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow: 0 4px 10px rgba(5, 34, 49, 0.18);
+}
+
+.gal-sidebar-brand img {
+    max-width: 150px;
+    height: auto;
+    filter: drop-shadow(0 2px 5px rgba(14, 48, 67, 0.2)) contrast(1.04);
+}
+
+.gal-sidebar-autor {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 0.45rem 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    line-height: 1.3;
+}
+
+.gal-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.gal-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.62rem 0.7rem;
+    border-radius: 0.65rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.94rem;
+    line-height: 1.2;
+    border: 1px solid transparent;
+}
+
+.gal-nav-link i {
+    font-size: 1.02rem;
+    width: 1.2rem;
+    text-align: center;
+}
+
+.gal-nav-link:hover,
+.gal-nav-link:focus {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+}
+
+.gal-nav-link.is-active {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.12));
+    border-color: rgba(255, 255, 255, 0.38);
+    color: #fff;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.gal-nav-link.is-active i {
+    color: #dff7ff;
+}
+
+.gal-sidebar-footer {
+    margin-top: auto;
+    padding-top: 0.35rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.gal-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/* -------------------------------------------- */
+/* Actionbar y main del área galerista          */
+/* -------------------------------------------- */
+
+.gal-actionbar {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid #dee2e6;
+    padding: 0.85rem 1rem 0.8rem;
+}
+
+.gal-action-title {
+    margin: 0;
+    font-size: clamp(1rem, 1.85vw, 1.4rem);
+    font-weight: 700;
+    color: #143954;
+}
+
+.gal-main {
+    flex: 1;
+}
+
+.obra-modal-content {
+    background-color: rgba(12, 22, 28, 0.96);
+}
+
+.obra-modal-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem;
+}
+
+.obra-modal-img {
+    max-width: 100%;
+    max-height: calc(100vh - 100px);
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* -------------------------------------------- */
+/* Header del pintor (dashboard lista)          */
+/* -------------------------------------------- */
+
+.galerista-header {
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+
+    img {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 1px 1px 4px rgba(0,0,0,.3);
+    }
+
+    h4 {
+        color: #333;
+        font-weight: 500;
+        margin-bottom: 0;
+    }
+}
+
+/* -------------------------------------------- */
+/* Responsive sidebar galeristas                */
+/* -------------------------------------------- */
+
+@media (max-width: 992px) {
+    .gal-shell {
+        flex-direction: column;
+    }
+
+    .gal-sidebar {
+        position: static;
+        width: 100%;
+        min-width: unset;
+        max-height: none;
+        padding: 0.7rem;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .gal-sidebar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+    }
+
+    .gal-nav-link {
+        flex: 1 1 calc(50% - 0.35rem);
+        min-width: 140px;
+    }
+
+    .gal-sidebar-footer {
+        border-top: 0;
+        padding-top: 0;
+    }
+}
+
+

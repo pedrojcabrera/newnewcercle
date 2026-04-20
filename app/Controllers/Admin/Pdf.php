@@ -11,10 +11,9 @@ use App\Models\InscritosModel;
 use App\Models\EnEsperaModel;
 
 use App\Controllers\BaseController;
-use CodeIgniter\HTTP\ResponseInterface;
 
 class Pdf extends BaseController {
-   
+
    public function listarInscritos($id) {
          // Instancia de los modelos
          $eventosModel = new EventosModel();

@@ -59,12 +59,12 @@
                 value="<?=isset($contacto) ? $contacto->email : ''?>" required>
         </div>
         <div class="mb-3">
-            <input type="telefono" class="form-control" name="telefono" id="telefono" placeholder="Teléfono"
+            <input type="tel" class="form-control" name="telefono" id="telefono" placeholder="Teléfono"
                 value="<?=isset($contacto) ? $contacto->telefono : ''?>" required>
         </div>
         <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
         <button type="submit" id="enviar" value="submit" class="btn btn-primary">Enviar</button>
-        <small class="form-text text-muted d-block mt-2">Este sitio está protegido por reCAPTCHA de Google. Se aplican la <a href="https://policies.google.com/privacy" target="_blank">Política de Privacidad</a> y los <a href="https://policies.google.com/terms" target="_blank">Términos de Servicio</a>.</small>
+        <small class="form-text text-muted d-block mt-2">Este sitio está protegido por reCAPTCHA de Google. Se aplican la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidad</a> y los <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Términos de Servicio</a>.</small>
 
         <?=form_close()?>
 

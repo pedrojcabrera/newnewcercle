@@ -7,8 +7,8 @@
         <div class="boton-agregar">
         </div>
         <div class="boton-cancelar">
-            <a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left" href="<?php echo base_url('dashboard');
-?>" role="button" title="Cancelar"> Cancelar</a>
+            <a name="cancelar" id="cancelar" class="btn btn-success btn-sm" href="<?php echo base_url('dashboard');
+?>" role="button" title="Cancelar"><i class="bi bi-box-arrow-left"></i></a>
         </div>
     </div>
 
@@ -38,22 +38,25 @@
                         <td class="text-start">
                             <p class="small mb-0"><b><?php echo trim($email->nombre . " " . $email->apellidos);?></b>
                             </p>
-                            <p class="bi bi-envelope small mb-0"> <?php echo $email->email;?></p>
-                            <p class="bi bi-telephone small mb-0"> <?php echo $email->telefono;?></p>
+                            <p class="small mb-0"><i class="bi bi-envelope-fill"></i> <?php echo esc($email->email);?></p>
+                            <p class="small mb-0"><i class="bi bi-telephone-fill"></i> <?php echo esc($email->telefono);?></p>
                         </td>
                         <td class="text-end ico-acciones">
                             <?php if (! $email->inscrito): ?>
                             <form style="display: inline;"
                                 action="<?php echo base_url('control/emailsIns/' . $email->id);?>" method="POST">
-                                <button type="submit" title="Inscribir" class="btn btn-primary btn-sm bi-check-lg">
-                                    Inscribir</button>
+                                <?php echo csrf_field(); ?>
+                                <button type="submit" title="Inscribir" class="btn btn-primary btn-sm"
+                                    aria-label="Inscribir"><i class="bi bi-check-circle-fill"></i></button>
                             </form>
                             <?php endif; ?>
                             <form style="display: inline;"
                                 action="<?php echo base_url('control/emailsIns/' . $email->id);?>" method="POST">
+                                <?php echo csrf_field(); ?>
                                 <input type="hidden" name="_method" value="DELETE">
-                                <button type="submit" title="Borrar" class="btn btn-danger btn-sm bi-eraser"
-                                    onclick="return confirm('¿ Confirma el borrado ?');"> Eliminar</button>
+                                <button type="submit" title="Borrar" class="btn btn-danger btn-sm"
+                                    aria-label="Eliminar"
+                                    onclick="return confirm('\u00bf Confirma el borrado ?');"><i class="bi bi-trash3-fill"></i></button>
                             </form>
                         </td>
                     </tr>

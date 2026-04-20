@@ -8,7 +8,6 @@ use App\Models\InvitadosModel;
 use App\Models\EventosModel;
 
 use App\Controllers\BaseController;
-use CodeIgniter\HTTP\ResponseInterface;
 
 class EmailsIns extends BaseController
 {
@@ -21,9 +20,9 @@ class EmailsIns extends BaseController
         $this->model = new EnEsperaModel;
         $this->eventosModel = new EventosModel;
     }
-    
+
     public function lista(){
-        
+
         $emails = $this->model->emailsConEvento();
 
         $data = [
@@ -41,12 +40,13 @@ class EmailsIns extends BaseController
     }
 
     public function inscribe($id) {
-        
+
         $esperandoM = new EnEsperaModel();
-        
+        $mInscritos = new InscritosModel();
+
         $eEmailsIns = $esperandoM->find($id); /* solicitó inscripción por correo */
-        
-        if($eEmailsIns) {
+
+        if($eEmailsIns && !$eEmailsIns->inscrito) {
 
             $registro = [
                 'id_evento'     => $eEmailsIns->id_evento,
@@ -57,15 +57,23 @@ class EmailsIns extends BaseController
                 'via'           => 'registro',
             ];
 
-            $mInscritos = new InscritosModel();
+            $inscritoExistente = $mInscritos
+                ->where('id_evento', $eEmailsIns->id_evento)
+                ->groupStart()
+                    ->where('id_contacto', $eEmailsIns->id_contacto)
+                    ->orWhere('email', $eEmailsIns->email)
+                ->groupEnd()
+                ->first();
 
-            $mInscritos->insert($registro);
+            if (!$inscritoExistente) {
+                $mInscritos->insert($registro);
+            }
 
             $datos = [ 'inscrito'=> 1 ];
             $esperandoM->update($id, $datos);
 
             $mInvitados = new InvitadosModel();
-            
+
             $mInvitados->where('id_contacto', $eEmailsIns->id_contacto)
                        ->where('id_evento', $eEmailsIns->id_evento)
                        ->set(['inscrito' => 1])
@@ -74,26 +82,30 @@ class EmailsIns extends BaseController
             $id     = $registro['id_evento'];
             $evento = $this->eventosModel->find($id);
 
-            $cabeceraCorreo = "recursos/imagenes/logo_Cercle_125.png";            
+            if (!$evento) {
+                return redirect()->to(base_url('control/emailsIns'));
+            }
+
+            $cabeceraCorreo = "recursos/imagenes/logo_Cercle_125.png";
             $correoTexto  = "<div style='text-align: left;'>";
             $correoTexto .= "<p>Desde el Cercle d'Art de Foios le confirmamos que se ha procedido a su inscripción en el evento:</p>";
             $correoTexto .= "<p style='width: 100%; text-align: center; font-weight: bold;'>".strtoupper($evento->titulo)."</p>";
-            
+
             if($evento->desde == $evento->hasta):
                 $correoTexto .= "<p>que se celebrará durante el ".date('d/m/Y', strtotime($evento->desde)).".</p>";
             else:
                 $correoTexto .= "<p>que se extenderá desde el ".date('d/m/Y', strtotime($evento->desde))." hasta el ".date('d/m/Y', strtotime($evento->hasta)).".</p>";
             endif;
-            
+
             $correoTexto .= "<br><p>Un saludo del Cercle d'Art de Foios.</p>";
             $correoTexto .= "<br><p style='font-style: italic'>Si ud. desea cancelar esta inscripción, por favor, hagalo saber por correo electrónico a correo@cercledartfoios.com.</p>";
             $correoTexto .= "<p style='font-style: italic'>Si esta inscripción ha sido un error por nuestra parte, por favor no dude en comunicarlo por correo electrónico a correo@cercledartfoios.com.</p>";
             $correoTexto .= "</div>";
             $correoAsunto = "Inscripción en un evento del Cercle d'Art de Foios";
             $correoEmail = $registro['email'];
-            
+
                         // dd($evento);
-                        
+
 
             $email = \Config\Services::email();
 
@@ -109,9 +121,10 @@ class EmailsIns extends BaseController
 
             $email->setMessage($plantilla);
 
-            $res = $email->send();
-            
+            $email->send();
+
         }
-        return $this->lista();
+
+        return redirect()->to(base_url('control/emailsIns'));
     }
 }

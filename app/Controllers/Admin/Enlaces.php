@@ -5,19 +5,32 @@ namespace App\Controllers\Admin;
 use App\Models\EnlacesModel;
 
 use App\Controllers\BaseController;
-use CodeIgniter\HTTP\ResponseInterface;
 
 class Enlaces extends BaseController
 {
 
     public $model;
 
+    private function construirPayloadEnlace(array $post, ?int $id = null): array
+    {
+        $payload = [
+            'texto'     => $post['texto'] ?? '',
+            'enlace'    => $post['enlace'] ?? '',
+        ];
+
+        if ($id !== null) {
+            $payload['id'] = $id;
+        }
+
+        return $payload;
+    }
+
 
     public function __construct()
     {
         $this->model = new EnlacesModel;
     }
-    
+
     public function lista(){
         $enlaces = $this->model->OrderBy('fecha_insercion','DESC')->findAll();
         $data = [
@@ -39,17 +52,14 @@ class Enlaces extends BaseController
             'texto'     => 'required',
             'enlace'    => 'required|valid_url',
         ];
-        
+
         if(!$this->validate($reglas)) {
             return redirect()->to(base_url('control/enlaces/nuevo'))->withInput();
         }
 
         $post = $this->request->getPost();
 
-        $this->model->insert([
-            'texto'     => $post['texto'],
-            'enlace'    => $post['enlace'],
-        ]);
+        $this->model->insert($this->construirPayloadEnlace($post));
 
         return redirect()->to(base_url('control/enlaces'));
     }
@@ -59,7 +69,7 @@ class Enlaces extends BaseController
         $data = [
             'titulo'    => 'Edición de Enlace de Interés',
             'id'        => $id,
-            'enlace'    => $enlace, 
+            'enlace'    => $enlace,
         ];
         return view('admin/enlaces/editar', $data);
     }
@@ -75,13 +85,9 @@ class Enlaces extends BaseController
         }
 
         $post = $this->request->getPost();
-        
-        $datos = [
-            'id'        => $id,
-            'texto'     => $post['texto'],
-            'enlace'    => $post['enlace'],
-        ];
-        
+
+        $datos = $this->construirPayloadEnlace($post, (int) $id);
+
         $this->model->save($datos);
 
         return redirect()->to(base_url('control/enlaces'));

@@ -3,19 +3,17 @@
 
 <div class="container lista_galerias">
 
-   <?php 
+   <?php
         $user = $artista;
-        $foto = 'sinfoto.jpg';
-        $fotoUser = $user.'.jpg';
-        if (file_exists('fotosUsuarios/'.$fotoUser)) {
-            $foto = $fotoUser;
-        }
+      $fotoUser = $user . '.jpg';
     ?>
    <figure>
-      <img src=" <?=base_url('fotosUsuarios/'.$foto)?>" alt="">
+     <img src="<?= base_url('fotosUsuarios/' . $fotoUser) ?>"
+       onerror="this.onerror=null;this.src='<?= base_url('fotosUsuarios/sinfoto.jpg') ?>'"
+       alt="Foto de <?= esc($nombre) ?>">
 
       <figcaption>
-         <?= $nombre?>
+         <?= esc($nombre) ?>
       </figcaption>
    </figure>
 </div>
@@ -27,31 +25,31 @@
    </div>
    <?php foreach ($obras as $obra): ?>
    <div class="card item-0 item-4">
-      <img src="<?=base_url('galerias/'.$artista.'/'.$obra->cuadro.'.jpg')?>" alt="">
+      <img src="<?=base_url('galerias/'.$artista.'/'.$obra->cuadro.'.jpg')?>" alt="Obra de <?= esc($nombre) ?>">
       <div class="card-body">
-         <h5 class="card-title"><?=$obra->titulo?></h5>
-         <h6 class="ano"><?=($obra->ano > 0) ? 'Año: '.$obra->ano : ''?></h6>
+         <h5 class="card-title"><?= esc($obra->titulo) ?></h5>
+         <h6 class="ano"><?=($obra->ano > 0) ? 'Año: '.esc($obra->ano) : ''?></h6>
          <?php if(!empty($obra->comentarios)): ?>
          <hr>
          <p class="comentarios-4">
-            <?=nl2br($obra->comentarios)?>
+            <?= nl2br(esc((string) $obra->comentarios)) ?>
          </p>
          <?php endif;?>
          <hr>
          <p class="datos-tecnicos-4">
-            <span class="datosCuadro">Técnica: </span> <?=$obra->tecnica?><br>
-            <span class="datosCuadro">Soporte: </span> <?=$obra->soporte?><br>
-            <span class="datosCuadro">Medidas: </span> <?=$obra->medidas?>
+            <span class="datosCuadro">Técnica: </span> <?= esc($obra->tecnica) ?><br>
+            <span class="datosCuadro">Soporte: </span> <?= esc($obra->soporte) ?><br>
+            <span class="datosCuadro">Medidas: </span> <?= esc($obra->medidas) ?>
          </p>
          <?php if($obra->precio > 0): ?>
          <p class="datos-tecnicos-4">
-            <span class="datosCuadro">Precio: </span> <?=$obra->precio?><small><small>€</small></small><span> (En
+            <span class="datosCuadro">Precio: </span> <?= esc($obra->precio) ?><small><small>€</small></small><span> (En
                venta)</span>
          </p>
          <?php if(!empty($obra->premios)): ?>
          <hr>
          <p class="premios-4">
-            <?=nl2br($obra->premios)?>
+            <?= nl2br(esc((string) $obra->premios)) ?>
          </p>
          <?php endif;?>
          <?php endif; ?>

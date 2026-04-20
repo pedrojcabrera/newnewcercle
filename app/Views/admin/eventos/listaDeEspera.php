@@ -2,16 +2,8 @@
 <?= $this->section('contenido')?>
 
 <div class="container">
-    <div class="d-flex justify-content-between mb-3">
-        <a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left"
-            href="<?=base_url('control/eventos')?>" role="button" title="Cancelar">
-            Volver</a>
-        <a name="listar" id="listar" class="btn btn-primary btn-sm bi-filetype-pdf"
-            href="<?=base_url('control/listarEnEspera/'.$evento->id)?>" role="button"
-            title="Generar pdf" target="_blank"> Imprimir PDF</a>
-    </div>
     <div class="card-body">
-        <h4 class="text-center"><?=$evento->titulo?></h4>
+        <h4 class="text-center"><?= esc($evento->titulo) ?></h4>
         <div class="table-responsive-sm">
             <table class="miTabla mt-3" id="datatable">
                 <thead>
@@ -35,24 +27,27 @@
                             <br>
                             <?= date('H:i', strtotime($enEspera->fecha))." h" ?>
                         </td>
-                        <td><?= trim($enEspera->nombre." ".$enEspera->apellidos) ?></td>
-                        <td><?= $enEspera->email ?>
-                            <br>Tel: <?= $enEspera->telefono ?>
+                        <td><?= esc(trim($enEspera->nombre." ".$enEspera->apellidos)) ?></td>
+                        <td><?= esc($enEspera->email) ?>
+                            <br>Tel: <?= esc($enEspera->telefono) ?>
                         </td>
                         <?php if(!$evento->evento_cerrado) : ?>
                         <td class="ico-acciones">
                             <form style="display: inline;"
                                 action="<?php echo base_url('control/inscribirDeEspera/' . $enEspera->id);?>"
                                 method="POST">
-                                <button type="submit" title="Inscribir" class="btn btn-primary btn-sm bi-check-lg">
-                                    Inscribir</button>
+                                <?= csrf_field() ?>
+                                <button type="submit" title="Inscribir" class="btn btn-primary btn-sm"
+                                    aria-label="Inscribir"><i class="bi bi-check-circle-fill"></i></button>
                             </form>
 
                             <form style="display: inline;"
                                 action="<?=base_url('control/quitarDeEspera/'.$enEspera->id) ?>" method="POST">
+                                <?= csrf_field() ?>
                                 <input type="hidden" name="_method" value="DELETE">
-                                <button type="submit" title="Borrar" class="btn btn-danger btn-sm bi-eraser"
-                                    onclick="return confirm('¿ Confirma el borrado ?');"> Quitar</button>
+                                <button type="submit" title="Borrar" class="btn btn-danger btn-sm"
+                                    aria-label="Quitar"
+                                    onclick="return confirm('\u00bf Confirma el borrado ?');"><i class="bi bi-trash3-fill"></i></button>
                             </form>
                         </td>
                         <?php endif; ?>
@@ -62,12 +57,11 @@
             </table>
         </div>
         <div class="d-flex justify-content-between mx-3 mt-3">
-            <a name="cancelar" id="cancelar" class="btn btn-success btn-sm bi-box-arrow-left"
-                href="<?=base_url('control/eventos')?>" role="button" title="Cancelar">
-                Volver</a>
-            <a name="listar" id="listar" class="btn btn-primary btn-sm bi-filetype-pdf"
+            <a name="cancelar" id="cancelar" class="btn btn-success btn-sm"
+                href="<?=base_url('control/eventos')?>" role="button" title="Volver"><i class="bi bi-box-arrow-left"></i> Cancelar</a>
+            <a name="listar" id="listar" class="btn btn-primary btn-sm"
                 href="<?=base_url('control/listarEnEspera/'.$evento->id)?>" role="button"
-                title="Generar pdf" target="_blank"> Imprimir PDF</a>
+                title="Generar pdf" target="_blank"><i class="bi bi-file-pdf-fill"></i> Generar PDF</a>
         </div>
     </div>
 </div>

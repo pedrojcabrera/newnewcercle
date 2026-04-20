@@ -23,21 +23,23 @@
 <!-- SCRIPTS -->
 
 <script {csp-script-nonce}>
-document.getElementById("menuToggle").addEventListener('click', toggleMenu);
+const menuToggle = document.getElementById('menuToggle');
+
+if (menuToggle) {
+   menuToggle.addEventListener('click', toggleMenu);
+}
 
 function toggleMenu() {
    var menuItems = document.getElementsByClassName('menu-item');
+   var expanded = menuToggle ? menuToggle.getAttribute('aria-expanded') === 'true' : false;
+
    for (var i = 0; i < menuItems.length; i++) {
       var menuItem = menuItems[i];
-      menuItem.classList.toggle("hidden");
+      menuItem.classList.toggle('hidden');
+   }
+
+   if (menuToggle) {
+      menuToggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
    }
 }
-</script>
-<!-- ---------------------------------------------------- -->
-<script>
-// Agregar una entrada en el historial para evitar el retroceso
-window.history.pushState(null, "", window.location.href);
-window.onpopstate = function() {
-   window.history.pushState(null, "", window.location.href);
-};
 </script>

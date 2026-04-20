@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Traits\ConEventoQueryTrait;
 use CodeIgniter\Model;
 
 class EnEsperaModel extends Model
 {
+    use ConEventoQueryTrait;
+
     protected $table      = 'enespera';  // Nombre de la tabla en MySQL
     protected $primaryKey = 'id';         // Clave primaria de la tabla
     protected $returnType = 'object';
@@ -23,21 +26,16 @@ class EnEsperaModel extends Model
 
     // Método para obtener el título del evento
     public function emailsConEvento() {
-        return $this->select(
-            "
-            enespera.id AS id,
-            enespera.nombre AS nombre,
-            enespera.apellidos AS apellidos,
-            enespera.email AS email,
-            enespera.telefono AS telefono,
-            enespera.fecha AS fecha,
-            enespera.id_evento AS id_evento,
-            enespera.id_invitado AS id_invitado,
-            enespera.fecha AS fecha,
-            neventos.titulo AS titulo"
-            )
-            ->join('neventos', 'neventos.id = id_evento')
-            ->OrderBy('fecha','DESC')
-            ->findAll();
+        return $this->fetchConEvento([
+            'enespera.id AS id',
+            'enespera.nombre AS nombre',
+            'enespera.apellidos AS apellidos',
+            'enespera.email AS email',
+            'enespera.telefono AS telefono',
+            'enespera.fecha AS fecha',
+            'enespera.id_evento AS id_evento',
+            'enespera.id_invitado AS id_invitado',
+            'neventos.titulo AS titulo',
+        ]);
     }
 }

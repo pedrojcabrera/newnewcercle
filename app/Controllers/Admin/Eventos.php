@@ -23,6 +23,66 @@ class Eventos extends BaseController
   public $hoy;
   public $ahora;
 
+  private function validarRangoFechas(?string $desde, ?string $hasta, string $errorKey, string $mensaje): bool
+  {
+    if (empty($desde) || empty($hasta)) {
+      return true;
+    }
+
+    $desdeTs = strtotime($desde);
+    $hastaTs = strtotime($hasta);
+
+    if ($desdeTs === false || $hastaTs === false) {
+      return true;
+    }
+
+    if ($hastaTs < $desdeTs) {
+      session()->set([$errorKey => $mensaje]);
+      return false;
+    }
+
+    return true;
+  }
+
+  private function construirPayloadEvento(
+    array $post,
+    ?int $id = null,
+    bool $incluirInscripcionInvitacion = false,
+    bool $incluirEventoCerrado = false
+  ): array {
+    $payload = [
+      'titulo'         => trim((string) ($post['titulo'] ?? '')),
+      'eventotipo'     => $post['eventotipo'] ?? '',
+      'desde'          => $post['desde'] ?? null,
+      'hasta'          => $post['hasta'] ?? null,
+      'texto'          => trim((string) ($post['texto'] ?? '')),
+      'texto_carta'    => trim((string) ($post['texto_carta'] ?? '')),
+      'visible'        => isset($post['visible']) ? 1 : 0,
+      'socio'          => isset($post['socio']) ? 1 : 0,
+      'alumno'         => isset($post['alumno']) ? 1 : 0,
+      'pdalumno'       => isset($post['pdalumno']) ? 1 : 0,
+      'pintor'         => isset($post['pintor']) ? 1 : 0,
+      'dtaller'        => isset($post['dtaller']) ? 1 : 0,
+      'amigo'          => isset($post['amigo']) ? 1 : 0,
+      'inscripcion'    => isset($post['inscripcion']) ? 1 : 0,
+      'aforo_completo' => isset($post['aforo_completo']) ? 1 : 0,
+    ];
+
+    if ($id !== null) {
+      $payload['id'] = $id;
+    }
+
+    if ($incluirInscripcionInvitacion) {
+      $payload['inscripcion_invitacion'] = isset($post['inscripcion_invitacion']) ? 1 : 0;
+    }
+
+    if ($incluirEventoCerrado) {
+      $payload['evento_cerrado'] = isset($post['evento_cerrado']) ? 1 : 0;
+    }
+
+    return $payload;
+  }
+
   public function __construct()
   {
     $this->model     = new EventosModel;
@@ -39,15 +99,59 @@ class Eventos extends BaseController
     $this->ahora = date('Y-m-d H:i');
   }
 
+  private function getUnsubscribeSecret(): ?string
+  {
+    $secret = trim((string) env('unsubscribeTokenSecret'));
+    if ($secret !== '') {
+      return $secret;
+    }
+
+    $secret = trim((string) env('encryption.key'));
+    if ($secret !== '') {
+      return $secret;
+    }
+
+    return null;
+  }
+
+  private function buildUnsubscribeToken(int $contactoId, string $scope): ?string
+  {
+    $secret = $this->getUnsubscribeSecret();
+    if ($secret === null) {
+      return null;
+    }
+
+    return hash_hmac('sha256', $scope . '|' . $contactoId, $secret);
+  }
+
+  private function buildUnsubscribeUrl(int $contactoId, string $scope): string
+  {
+    $token = $this->buildUnsubscribeToken($contactoId, $scope);
+    if ($token === null) {
+      log_message('critical', 'No se pudo generar token de baja: falta unsubscribeTokenSecret y encryption.key.');
+      return base_url('contactar');
+    }
+
+    return base_url('bajasxpiecorreo/' . $scope . '/' . $contactoId . '/' . $token);
+  }
+
   public function lista()
   {
+    $perPage = 25;
+    $page = $this->request->getVar('page') ?? 1;
+    $offset = ($page - 1) * $perPage;
 
+    // Contar total usando método dedicado
+    $total = $this->model->countAllResults();
+    $totalPages = ceil($total / $perPage);
+
+    // Obtener eventos paginados
     $this->sql->select('eventos.*, eventos.desde, eventos.hasta, tiposeventos.eventonombre AS grupo');
     $this->sql->join('tiposeventos', 'tiposeventos.eventotipo = eventos.eventotipo');
     $this->sql->orderby('eventos.id', 'DESC');
+    $this->sql->limit($perPage, $offset);
 
     $query = $this->sql->get();
-
     $eventos = $query->getResult();
 
     $hoy = date('Y-m-d');
@@ -56,6 +160,9 @@ class Eventos extends BaseController
       'titulo'  => 'Eventos',
       'eventos' => $eventos,
       'hoy'     => $hoy,
+      'page' => $page,
+      'totalPages' => $totalPages,
+      'total' => $total,
     ];
     return view('admin/eventos/lista', $data);
   }
@@ -80,62 +187,39 @@ class Eventos extends BaseController
       'hasta'             => 'required|valid_date',
       'desde_inscripcion' => 'permit_empty|valid_date',
       'hasta_inscripcion' => 'permit_empty|valid_date',
+      'cartel'            => 'permit_empty|max_size[cartel,6144]|ext_in[cartel,jpg,jpeg]|is_image[cartel]',
+      'pdf_adjunto'       => 'permit_empty|max_size[pdf_adjunto,10240]|ext_in[pdf_adjunto,pdf]|mime_in[pdf_adjunto,application/pdf]',
     ];
 
-    $desde = strtotime($this->request->getPost('desde'));
-    $hasta = strtotime($this->request->getPost('hasta'));
-
-    if ($hasta < $desde) {
-      session()->set(['error_hasta' => 'La fecha de finalización no puede ser anterior a la de Inicio de este evento']);
+    if (! $this->validarRangoFechas(
+      $this->request->getPost('desde'),
+      $this->request->getPost('hasta'),
+      'error_hasta',
+      'La fecha de finalización no puede ser anterior a la de Inicio de este evento'
+    )) {
       $recarga = true;
     }
 
     $post = $this->request->getPost();
 
-    $visible = isset($post['visible']) ? 1 : 0;
-
-    $socio    = isset($post['socio']) ? 1 : 0;
-    $alumno   = isset($post['alumno']) ? 1 : 0;
-    $pdalumno = isset($post['pdalumno']) ? 1 : 0;
-    $pintor   = isset($post['pintor']) ? 1 : 0;
-    $dtaller  = isset($post['dtaller']) ? 1 : 0;
-    $amigo    = isset($post['amigo']) ? 1 : 0;
-
     $inscripcion            = isset($post['inscripcion']) ? 1 : 0;
     $inscripcion_invitacion = isset($post['inscripcion_invitacion']) ? 1 : 0;
-
-    $aforo_completo = isset($post['aforo_completo']) ? 1 : 0;
 
     if ($inscripcion) {
       $reglas['desde_inscripcion'] = 'required|valid_date';
       $reglas['hasta_inscripcion'] = 'required|valid_date';
 
-      $desde = strtotime($this->request->getPost('desde_inscripcion'));
-      $hasta = strtotime($this->request->getPost('hasta_inscripcion'));
-
-      if ($hasta < $desde) {
-        session()->set(['error_hasta_inscripcion' => 'La fecha final de inscripción no puede ser anterior a la de Inicio']);
+      if (! $this->validarRangoFechas(
+        $this->request->getPost('desde_inscripcion'),
+        $this->request->getPost('hasta_inscripcion'),
+        'error_hasta_inscripcion',
+        'La fecha final de inscripción no puede ser anterior a la de Inicio'
+      )) {
         $recarga = true;
       }
     }
 
-    $data = [
-      'titulo'         => trim($post['titulo']),
-      'eventotipo'     => $post['eventotipo'],
-      'desde'          => $post['desde'],
-      'hasta'          => $post['hasta'],
-      'texto'          => trim($post['texto']),
-      'texto_carta'    => trim($post['texto_carta']),
-      'visible'        => $visible,
-      'socio'          => $socio,
-      'alumno'         => $alumno,
-      'pdalumno'       => $pdalumno,
-      'pintor'         => $pintor,
-      'dtaller'        => $dtaller,
-      'amigo'          => $amigo,
-      'inscripcion'    => $inscripcion,
-      'aforo_completo' => $aforo_completo,
-    ];
+    $data = $this->construirPayloadEvento($post);
 
     if ($inscripcion) {
       if (! empty($post['desde_inscripcion'])) {
@@ -164,7 +248,7 @@ class Eventos extends BaseController
 
     $imagen = $this->request->getFile('cartel');
 
-    if ($imagen) {
+    if ($imagen && $imagen->isValid() && ! $imagen->hasMoved()) {
 
       $destino = FCPATH . 'imgEventos/ev_' . $this->model->insertID() . '/';
       $ext     = $imagen->getClientExtension();
@@ -178,14 +262,12 @@ class Eventos extends BaseController
 
     $pdf_adjunto = $this->request->getFile('pdf_adjunto');
 
-    if ($pdf_adjunto) {
+    if ($pdf_adjunto && $pdf_adjunto->isValid() && ! $pdf_adjunto->hasMoved()) {
 
-      $subido = $this->request->getFile('pdf_adjunto');
-      //$origen = $subido->getFileName();
       $destino = 'pdf_' . $this->model->insertID() . '.pdf';
       $camino  = FCPATH . 'pdfEventos/';
 
-      $this->_upload($subido, $camino, $destino);
+      $this->_upload($pdf_adjunto, $camino, $destino);
     }
 
     return redirect()->to(base_url('control/eventos'));
@@ -215,32 +297,23 @@ class Eventos extends BaseController
       'hasta'             => 'required|valid_date',
       'desde_inscripcion' => 'permit_empty|valid_date',
       'hasta_inscripcion' => 'permit_empty|valid_date',
+      'cartel'            => 'permit_empty|max_size[cartel,6144]|ext_in[cartel,jpg,jpeg]|is_image[cartel]',
+      'pdf'               => 'permit_empty|max_size[pdf,10240]|ext_in[pdf,pdf]|mime_in[pdf,application/pdf]',
     ];
 
-    $desde = strtotime($this->request->getPost('desde'));
-    $hasta = strtotime($this->request->getPost('hasta'));
-
-    if ($hasta < $desde) {
-      session()->set(['error_hasta' => 'La fecha de finalización no puede ser anterior a la de Inicio de este evento']);
+    if (! $this->validarRangoFechas(
+      $this->request->getPost('desde'),
+      $this->request->getPost('hasta'),
+      'error_hasta',
+      'La fecha de finalización no puede ser anterior a la de Inicio de este evento'
+    )) {
       $recarga = true;
     }
 
     $post = $this->request->getPost();
 
-    $visible = isset($post['visible']) ? 1 : 0;
-
-    $socio    = isset($post['socio']) ? 1 : 0;
-    $alumno   = isset($post['alumno']) ? 1 : 0;
-    $pdalumno = isset($post['pdalumno']) ? 1 : 0;
-    $pintor   = isset($post['pintor']) ? 1 : 0;
-    $dtaller  = isset($post['dtaller']) ? 1 : 0;
-    $amigo    = isset($post['amigo']) ? 1 : 0;
-
     $noTieneCartel = isset($post['noTieneCartel']) ? 1 : 0;
     $noTienePdf    = isset($post['noTienePdf']) ? 1 : 0;
-
-    $aforo_completo = isset($post['aforo_completo']) ? 1 : 0;
-    $evento_cerrado = isset($post['evento_cerrado']) ? 1 : 0;
 
     $inscripcion            = isset($post['inscripcion']) ? 1 : 0;
     $inscripcion_invitacion = isset($post['inscripcion_invitacion']) ? 1 : 0;
@@ -249,34 +322,21 @@ class Eventos extends BaseController
       $reglas['desde_inscripcion'] = 'required|valid_date';
       $reglas['hasta_inscripcion'] = 'required|valid_date';
 
-      $desde = strtotime($this->request->getPost('desde_inscripcion'));
-      $hasta = strtotime($this->request->getPost('hasta_inscripcion'));
-
-      if ($hasta < $desde) {
-        session()->set(['error_hasta_inscripcion' => 'La fecha final de inscripción no puede ser anterior a la de Inicio']);
+      if (! $this->validarRangoFechas(
+        $this->request->getPost('desde_inscripcion'),
+        $this->request->getPost('hasta_inscripcion'),
+        'error_hasta_inscripcion',
+        'La fecha final de inscripción no puede ser anterior a la de Inicio'
+      )) {
         $recarga = true;
       }
     }
-    $data = [
-      'id'                     => $id,
-      'titulo'                 => trim($post['titulo']),
-      'eventotipo'             => $post['eventotipo'],
-      'desde'                  => $post['desde'],
-      'hasta'                  => $post['hasta'],
-      'texto'                  => trim($post['texto']),
-      'texto_carta'            => trim($post['texto_carta']),
-      'visible'                => $visible,
-      'socio'                  => $socio,
-      'alumno'                 => $alumno,
-      'pdalumno'               => $pdalumno,
-      'pintor'                 => $pintor,
-      'dtaller'                => $dtaller,
-      'amigo'                  => $amigo,
-      'inscripcion'            => $inscripcion,
-      'inscripcion_invitacion' => $inscripcion_invitacion,
-      'aforo_completo'         => $aforo_completo,
-      'evento_cerrado'         => $evento_cerrado,
-    ];
+    $data = $this->construirPayloadEvento(
+      $post,
+      (int) $id,
+      true,
+      true
+    );
 
     if ($inscripcion) {
       $data['desde_inscripcion'] = $this->request->getPost('desde_inscripcion');
@@ -303,14 +363,14 @@ class Eventos extends BaseController
       $file = $this->request->getFile('cartel');
 
       if ($file && $file->isValid() && ! $file->hasMoved()) {
-        $uploads = 'imgEventos/ev_' . $id . '/';
+        $uploads = FCPATH . 'imgEventos/ev_' . $id . '/';
         $newName = 'cartel.jpg';
 
         if (file_exists($uploads . $newName)) {
           unlink($uploads . $newName);
         }
 
-        $file->move($uploads, $newName);
+        $this->_upload($file, $uploads, $newName);
       }
     }
 
@@ -324,14 +384,14 @@ class Eventos extends BaseController
       $file = $this->request->getFile('pdf');
 
       if ($file && $file->isValid() && ! $file->hasMoved()) {
-        $uploads = 'pdfEventos/';
+        $uploads = FCPATH . 'pdfEventos/';
         $newName = 'pdf_' . $id . '.pdf';
 
         if (file_exists($uploads . $newName)) {
           unlink($uploads . $newName);
         }
 
-        $file->move($uploads, $newName);
+        $this->_upload($file, $uploads, $newName);
       }
     }
 
@@ -348,6 +408,10 @@ class Eventos extends BaseController
 
   private function _upload($origen, $camino, $destino)
   {
+    if (! is_dir($camino)) {
+      mkdir($camino, 0755, true);
+    }
+
     if ($origen->isValid() && ! $origen->hasMoved()) {
       $origen->move($camino, $destino);
     }
@@ -414,14 +478,25 @@ class Eventos extends BaseController
       $condiciones[] = "amigo = 1";
     }
 
-    $consulta = "invitaciones = 1 AND (" . implode(' OR ', $condiciones) . ")";
+    $builder = $this->db->table('contactos');
+    $builder->where('invitaciones', 1);
 
-    $db = \Config\Database::connect();
+    if ($condiciones !== []) {
+      $builder->groupStart();
+      foreach ($condiciones as $index => $condicion) {
+        [$campo] = explode(' ', $condicion);
+        if ($index === 0) {
+          $builder->where($campo, 1);
+        } else {
+          $builder->orWhere($campo, 1);
+        }
+      }
+      $builder->groupEnd();
+    } else {
+      $builder->where('id', 0);
+    }
 
-    $sql = "SELECT * FROM contactos
-                WHERE $consulta";
-
-    $query     = $db->query($sql);
+    $query     = $builder->get();
     $contactos = $query->getResultObject();
 
     foreach ($contactos as $contacto) {
@@ -468,9 +543,9 @@ class Eventos extends BaseController
       $cuerpo = str_replace('{{poblacion}}', $contacto->poblacion, $cuerpo);
       $cuerpo = str_replace('{{provincia}}', $contacto->provincia, $cuerpo);
 
-      $cuerpo = str_replace('{{baja_emails}}', base_url('bajasxpiecorreo/emails/' . $contacto->id), $cuerpo);
-      $cuerpo = str_replace('{{baja_invitaciones}}', base_url('bajasxpiecorreo/invitaciones/' . $contacto->id), $cuerpo);
-      $cuerpo = str_replace('{{baja_total}}', base_url('bajasxpiecorreo/total/' . $contacto->id), $cuerpo);
+      $cuerpo = str_replace('{{baja_emails}}', $this->buildUnsubscribeUrl((int) $contacto->id, 'emails'), $cuerpo);
+      $cuerpo = str_replace('{{baja_invitaciones}}', $this->buildUnsubscribeUrl((int) $contacto->id, 'invitaciones'), $cuerpo);
+      $cuerpo = str_replace('{{baja_total}}', $this->buildUnsubscribeUrl((int) $contacto->id, 'total'), $cuerpo);
 
       $email->setMessage($cuerpo);
 
@@ -527,7 +602,7 @@ class Eventos extends BaseController
 
     $data = [
       'titulo'    => 'Resultado envío masivo',
-      'asunto'    => '<small>Invitaciónes a</small><br>' . $evento->titulo,
+      'asunto'    => '<small>Invitaciones a</small><br>' . $evento->titulo,
       'correctos' => $correctos,
       'errores'   => $errores,
       'repetidos' => $repetidos,
@@ -560,9 +635,11 @@ class Eventos extends BaseController
     $id_evento = $invitado->id_evento;
     $evento    = $this->model->find($id_evento);
 
+    $this->db->transStart();
     $this->enEspera->where('id_invitado', $id)->delete();
     $this->inscritos->where('id_invitado', $id)->delete();
     $this->invitados->delete($id);
+    $this->db->transComplete();
 
     $invitados = $this->invitados->where('id_evento', $id_evento)->findAll();
 
@@ -578,13 +655,18 @@ class Eventos extends BaseController
   public function contactoDesdeInscrito($id = 0)
   {
 
-    if(!$id) {
-      $session = session();      
-      $inscrito = $session->get('inscrito');
-      $session->remove('inscrito');
-      $id = $inscrito->id;
-    } else {
-      $inscrito = $this->inscritos->find($id);
+    if (! $id) {
+      $id = (int) $this->request->getPost('id_inscrito');
+    }
+
+    if (! $id) {
+      return redirect()->to(base_url('control/eventos'));
+    }
+
+    $inscrito = $this->inscritos->find($id);
+
+    if (! $inscrito) {
+      return redirect()->to(base_url('control/eventos'));
     }
 
     $datosContacto = [
@@ -626,15 +708,10 @@ class Eventos extends BaseController
 
     $inscrito = $this->inscritos->find($id);
 
-    $contacto = $this->contactos->find($inscrito->id_contacto);
-
     $data = [
       'titulo'    => 'Completar Contacto',
       'inscrito'  => $inscrito,
     ];
-
-    $session=session();
-    $session->set('inscrito', $inscrito);
 
     return view('admin/eventos/completaContacto', $data);
 
@@ -656,8 +733,10 @@ class Eventos extends BaseController
     ];
 
     if (! $datosInvitado->inscrito) {
-      $a = $this->inscritos->insert($datosInscritos);
-      $b = $this->invitados->update($id, ['inscrito' => 1, 'enespera' => 0]);
+      $this->db->transStart();
+      $this->inscritos->insert($datosInscritos);
+      $this->invitados->update($id, ['inscrito' => 1, 'enespera' => 0]);
+      $this->db->transComplete();
     }
 
     $evento = $this->model->find($id_evento);
@@ -705,11 +784,14 @@ class Eventos extends BaseController
       'fecha'       => $inscrito->fecha,
     ];
     if ($inscrito->id_invitado > 0) {
+      $this->db->transStart();
       $this->enEspera->insert($datosEnEspera);
       $this->invitados->update($inscrito->id_invitado, ['inscrito' => 0, 'enespera' => 1]);
+      $this->inscritos->delete($id);
+      $this->db->transComplete();
+    } else {
+      $this->inscritos->delete($id);
     }
-
-    $this->inscritos->delete($id);
 
     $evento    = $this->model->find($inscrito->id_evento);
     $inscritos = $this->inscritos->where('id_evento', $inscrito->id_evento)->findAll();
@@ -865,9 +947,10 @@ class Eventos extends BaseController
       'via'         => 'De espera',
     ];
 
+    $this->db->transStart();
     $this->inscritos->insert($datosInscritos);
 
-    $invitado = $this->invitados
+    $this->invitados
       ->update(
         $enEspera->id_invitado,
         [
@@ -879,6 +962,7 @@ class Eventos extends BaseController
     $evento = $this->model->find($enEspera->id_evento);
 
     $this->enEspera->delete($id);
+    $this->db->transComplete();
 
     $esperando = $this->enEspera
       ->where('id_evento', $enEspera->id_evento)
@@ -897,8 +981,10 @@ class Eventos extends BaseController
   {
     $enEspera = $this->enEspera->find($id);
 
+    $this->db->transStart();
     $this->enEspera->delete($id);
     $this->invitados->update($enEspera->id_invitado, ['enespera' => 0]);
+    $this->db->transComplete();
 
     $evento    = $this->model->find($enEspera->id_evento);
     $esperando = $this->enEspera->where('id_evento', $evento->id)->findAll();
@@ -949,35 +1035,13 @@ class Eventos extends BaseController
 
     // Busca Foto
 
-    $a_borrar = 'imgEventos/ev_' . $id . '/' . $foto;
+    $fotoLimpia = basename(rawurldecode($foto));
+    $a_borrar   = FCPATH . 'imgEventos/ev_' . $id . '/' . $fotoLimpia;
     if (file_exists($a_borrar)) {
       unlink($a_borrar);
     }
 
-    // Busca Fotos
-
-    // $dirtoscan = dirname($_SERVER['PHP_SELF']);
-
-    if (is_dir('imgEventos/ev_' . $id)) {
-      $imgs = scandir('imgEventos/ev_' . $id);
-    } else {
-      $imgs = [];
-    }
-
-    $fotos = [];
-    foreach ($imgs as $img) {
-      if (! in_array($img, ['.', '..', 'Cartel.jpg', 'cartel.jpg'])) {
-        $fotos[] = $img;
-      }
-    }
-
-    $data = [
-      'evento' => $evento,
-      'fotos'  => $fotos,
-      'titulo' => 'Fotografías',
-    ];
-
-    return view('admin/eventos/fotografias', $data);
+    return redirect()->to(base_url('control/fotos/' . $id));
   }
 
   public function agregarFotos($id)
@@ -1034,20 +1098,7 @@ class Eventos extends BaseController
         $imgs = [];
       }
 
-      $fotos = [];
-      foreach ($imgs as $img) {
-        if (! in_array($img, ['.', '..', 'Cartel.jpg', 'cartel.jpg'])) {
-          $fotos[] = $img;
-        }
-      }
-
-      $data = [
-        'evento' => $evento,
-        'fotos'  => $fotos,
-        'titulo' => 'Fotografías',
-      ];
-
-      return view('admin/eventos/fotografias', $data);
+      return redirect()->to(base_url('control/fotos/' . $id));
     }
   }
 }

@@ -9,7 +9,7 @@
     <div style="text-align: center;margin: 1rem auto;width: 100%;">
         <div style="text-align: center;margin: 0 auto;">
             <img
-                src="<?=$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['SERVER_NAME'].'/public/recursos/imagenes/logo_Cercle_125.png'?>">
+                src="<?= base_url('public/recursos/imagenes/logo_Cercle_125.png') ?>">
         </div>
         <div style="text-align: center;margin: 0 auto;">
             <h1>CERCLE D'ART DE FOIOS</h1>
