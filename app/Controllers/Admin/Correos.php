@@ -336,6 +336,174 @@ class Correos extends BaseController
         return view('admin/correos/carteado', $data);
     }
 
+    public function sendmailLote($id = null)
+    {
+        $post     = $this->request->getPost();
+        $offset   = (int) ($post['offset']   ?? 0);
+        $enviosID = (int) ($post['enviosID'] ?? 0);
+        $total    = (int) ($post['total']    ?? 0);
+        $limit    = 10;
+
+        $grupos = [];
+        foreach (['socio', 'alumno', 'pdalumno', 'pintor', 'dtaller', 'amigo'] as $g) {
+            if (!empty($post[$g])) {
+                $grupos[] = $g;
+            }
+        }
+
+        if (empty($grupos)) {
+            return $this->response->setJSON(['ok' => false, 'error' => 'Sin grupos']);
+        }
+
+        $correo = $this->model->asObject()->find($id);
+        if (!$correo) {
+            return $this->response->setJSON(['ok' => false, 'error' => 'Correo no encontrado']);
+        }
+
+        $db                    = \Config\Database::connect();
+        $mailingsResumenModel  = new MailingsResumenModel;
+        $mailingsDetallesModel = new MailingsDetallesModel;
+
+        $buildQuery = function () use ($db, $grupos) {
+            $b = $db->table('contactos')->where('mailing', 1);
+            $b->groupStart();
+            foreach ($grupos as $i => $g) {
+                $i === 0 ? $b->where($g, 1) : $b->orWhere($g, 1);
+            }
+            $b->groupEnd();
+            return $b;
+        };
+
+        if ($offset === 0) {
+            $total = (int) $buildQuery()->countAllResults();
+            $mailingsResumenModel->insert([
+                'id_correo' => $correo->id,
+                'fechahora' => date('Y-m-d H:i:s'),
+                'enviados'  => 0,
+                'errores'   => 0,
+                'socios'    => in_array('socio',    $grupos),
+                'alumnos'   => in_array('alumno',   $grupos),
+                'padres'    => in_array('pdalumno', $grupos),
+                'artistas'  => in_array('pintor',   $grupos),
+                'talleres'  => in_array('dtaller',  $grupos),
+                'amigos'    => in_array('amigo',    $grupos),
+            ]);
+            $enviosID = (int) $mailingsResumenModel->insertID();
+        }
+
+        $contactos = $buildQuery()->limit($limit, $offset)->get()->getResultObject();
+
+        $correoHtmlSeguro = $this->sanitizeCorreoHtml($correo->texto ?? '');
+        $plantilla  = (string) @file_get_contents('recursos/plantillasmail/cabeceraMail.php');
+        $plantilla .= $correoHtmlSeguro;
+        $plantilla .= '<br>';
+        $plantilla .= (string) @file_get_contents('recursos/plantillasmail/pieMail.php');
+
+        $emailSvc = \Config\Services::email();
+        $emailSvc->setFrom('noreply@cercledartfoios.com', "Cercle d'Art Foios", 'rechazados@cercledartfoios.com');
+
+        $loteEnviados = 0;
+        $loteErrores  = 0;
+
+        foreach ($contactos as $contacto) {
+            $hayError = false;
+
+            if (!filter_var($contacto->email, FILTER_VALIDATE_EMAIL)) {
+                $hayError = true;
+            } else {
+                $cuerpo = $plantilla;
+                $cuerpo = str_replace('{{cabeceraCorreo}}', 'https://www.cercledartfoios.com/recursos/imagenes/logo_Cercle_125.png', $cuerpo);
+                $cuerpo = str_replace('{{id}}',        $contacto->id,           $cuerpo);
+                $cuerpo = str_replace('{{nombre}}',    trim($contacto->nombre), $cuerpo);
+                $cuerpo = str_replace('{{email}}',     $contacto->email,        $cuerpo);
+                $cuerpo = str_replace('{{telefono}}',  $contacto->telefono,     $cuerpo);
+                $cuerpo = str_replace('{{direccion}}', $contacto->direccion,    $cuerpo);
+                $cuerpo = str_replace('{{codpostal}}', $contacto->codpostal,    $cuerpo);
+                $cuerpo = str_replace('{{poblacion}}', $contacto->poblacion,    $cuerpo);
+                $cuerpo = str_replace('{{provincia}}', $contacto->provincia,    $cuerpo);
+                $cuerpo = str_replace('{{baja_emails}}',       $this->buildUnsubscribeUrl((int) $contacto->id, 'emails'),       $cuerpo);
+                $cuerpo = str_replace('{{baja_invitaciones}}', $this->buildUnsubscribeUrl((int) $contacto->id, 'invitaciones'), $cuerpo);
+                $cuerpo = str_replace('{{baja_total}}',        $this->buildUnsubscribeUrl((int) $contacto->id, 'total'),        $cuerpo);
+
+                $emailSvc->clear();
+                $emailSvc->setSubject($correo->asunto);
+                $emailSvc->setTo($contacto->email, 'info@cercledartfoios.com');
+                $emailSvc->setMessage($cuerpo);
+
+                $hayError = !$emailSvc->send();
+            }
+
+            if ($hayError) {
+                $loteErrores++;
+            } else {
+                $loteEnviados++;
+            }
+
+            $mailingsDetallesModel->insert([
+                'id_mailing'  => $enviosID,
+                'id_correo'   => $correo->id,
+                'id_contacto' => $contacto->id,
+                'error'       => $hayError ? 1 : 0,
+            ]);
+        }
+
+        $resumen = $mailingsResumenModel->find($enviosID);
+        $mailingsResumenModel->update($enviosID, [
+            'enviados' => (int) ($resumen->enviados ?? 0) + $loteEnviados,
+            'errores'  => (int) ($resumen->errores  ?? 0) + $loteErrores,
+        ]);
+
+        $procesados = $offset + count($contactos);
+        $done       = count($contactos) < $limit || $procesados >= $total;
+
+        return $this->response->setJSON([
+            'ok'         => true,
+            'enviosID'   => $enviosID,
+            'total'      => $total,
+            'procesados' => $procesados,
+            'done'       => $done,
+            'csrf_name'  => csrf_token(),
+            'csrf_hash'  => csrf_hash(),
+        ]);
+    }
+
+    public function resultado($enviosID = null)
+    {
+        $mailingsResumenModel  = new MailingsResumenModel;
+        $mailingsDetallesModel = new MailingsDetallesModel;
+        $contactosM            = new ContactosModel;
+
+        $resumen  = $mailingsResumenModel->find($enviosID);
+        $correo   = $this->model->asObject()->find($resumen->id_correo ?? 0);
+        $detalles = $mailingsDetallesModel->where('id_mailing', $enviosID)->findAll();
+
+        $correctos = [];
+        $errores   = [];
+        foreach ($detalles as $d) {
+            $c = $contactosM->find($d->id_contacto);
+            if (!$c) {
+                continue;
+            }
+            $arr = [
+                'nombre'   => trim($c->nombre . ' ' . $c->apellidos),
+                'email'    => $c->email,
+                'telefono' => $c->telefono,
+            ];
+            if ($d->error) {
+                $errores[$d->id_contacto] = $arr;
+            } else {
+                $correctos[$d->id_contacto] = $arr;
+            }
+        }
+
+        return view('admin/correos/carteado', [
+            'titulo'    => 'Resultado envío masivo',
+            'asunto'    => $correo->asunto ?? '',
+            'correctos' => $correctos,
+            'errores'   => $errores,
+        ]);
+    }
+
     public function listado($id = null)
     {
         $correosM   = new CorreosModel();

@@ -81,6 +81,8 @@ $routes->group('control', ['namespace' => 'App\Controllers\Admin', 'filter' => '
     $routes->delete('correos/(:num)', 'Correos::delete/$1');
     $routes->get('correos/cartear/(:num)', 'Correos::prepmail/$1');
     $routes->post('correos/enviomasivo/(:num)', 'Correos::sendmail/$1');
+    $routes->post('correos/lote/(:num)', 'Correos::sendmailLote/$1');
+    $routes->get('correos/resultado/(:num)', 'Correos::resultado/$1');
     $routes->get('correos/listado/(:num)', 'Correos::listado/$1');
 
     $routes->get('tipos', 'Tipos::lista');
@@ -120,7 +122,9 @@ $routes->group('control', ['namespace' => 'App\Controllers\Admin', 'filter' => '
     $routes->get('listarInvitados/(:num)', 'Pdf::listarInvitados/$1');
     $routes->get('listarEnEspera/(:num)', 'Pdf::listarEnEspera/$1');
 
-    $routes->get('inscripciones', 'Inscripciones::lista');
+    $routes->get('emailsIns', 'EmailsIns::lista');
+    $routes->post('emailsIns/(:num)', 'EmailsIns::inscribe/$1');
+    $routes->delete('emailsIns/(:num)', 'EmailsIns::delete/$1');
 
     $routes->get('(:any)', 'Admin::index', ['filter' => 'auth']);
 });
@@ -132,4 +136,4 @@ $routes->group('bajasxpiecorreo', ['namespace' => 'App\Controllers\Admin'], func
     $routes->get('total/(:num)/(:segment)', 'Autobajas::bajaTotal/$1/$2');
 });
 
-$routes->get('/host', 'Pruebas::informa_del_host');
+

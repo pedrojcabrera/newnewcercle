@@ -9,7 +9,7 @@
         <p class="dashboard-subtitle mb-0">Bienvenido al panel de administración</p>
     </div>
 
-    <div class="row g-3 g-lg-4 mt-1">
+    <div class="row g-3 g-lg-4 mt-1 justify-content-center">
         <div class="col-12 col-sm-6 col-xl-3">
             <a class="dashboard-card dashboard-card-1" href="<?= base_url('control/usuarios'); ?>">
                 <span class="dashboard-pill"><?= esc((string) ($dashboardCounts['usuarios'] ?? 0)) ?></span>
@@ -71,6 +71,14 @@
                 <i class="bi bi-person-plus-fill"></i>
                 <span>Inscripción Manual</span>
                 <small class="dashboard-pill-secondary"><?= esc(($dashboardExtras['inscripcionManual']['label'] ?? '')) ?>: <?= esc((string) ($dashboardExtras['inscripcionManual']['value'] ?? 0)) ?></small>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <a class="dashboard-card dashboard-card-9" href="<?= base_url('control/emailsIns'); ?>">
+                <span class="dashboard-pill"><?= esc((string) ($dashboardCounts['emailsIns'] ?? 0)) ?></span>
+                <i class="bi bi-envelope-check-fill"></i>
+                <span>Solicitudes por Correo</span>
+                <small class="dashboard-pill-secondary"><?= esc(($dashboardExtras['emailsIns']['label'] ?? '')) ?>: <?= esc((string) ($dashboardExtras['emailsIns']['value'] ?? 0)) ?></small>
             </a>
         </div>
         <div class="col-12">

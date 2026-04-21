@@ -7,8 +7,8 @@
         <div class="boton-agregar">
         </div>
         <div class="boton-cancelar">
-            <a name="cancelar" id="cancelar" class="btn btn-success btn-sm" href="<?php echo base_url('dashboard');
-?>" role="button" title="Cancelar"><i class="bi bi-box-arrow-left"></i></a>
+            <a name="cancelar" id="cancelar" class="btn btn-success btn-md" href="<?php echo base_url('dashboard');
+?>" role="button" title="Cancelar"><i class="bi bi-box-arrow-left"></i> Cancelar</a>
         </div>
     </div>
 

@@ -1028,6 +1028,10 @@ body.admin-body {
 	background: linear-gradient(135deg, #f0e0ff, #d2b1ff);
 }
 
+.dashboard-card-9 {
+	background: linear-gradient(135deg, #ffe5c8, #ffbc80);
+}
+
 .dashboard-card-static {
 	cursor: default;
 	text-decoration: none;
@@ -1048,6 +1052,7 @@ body.admin-body {
 .dashboard-history-title-wrap {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	gap: 0.55rem;
 	color: #12314e;
 	font-weight: 800;
@@ -1066,6 +1071,7 @@ body.admin-body {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.55rem;
+	justify-content: center;
 }
 
 .dashboard-history-chip {

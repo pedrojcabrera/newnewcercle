@@ -2,7 +2,7 @@
 
 namespace App\Controllers\Admin;
 
-use App\Models\EnEsperaModel;
+use App\Models\EmailsInsModel;
 use App\Models\InscritosModel;
 use App\Models\InvitadosModel;
 use App\Models\EventosModel;
@@ -17,7 +17,7 @@ class EmailsIns extends BaseController
 
     public function __construct()
     {
-        $this->model = new EnEsperaModel;
+        $this->model = new EmailsInsModel;
         $this->eventosModel = new EventosModel;
     }
 
@@ -41,7 +41,7 @@ class EmailsIns extends BaseController
 
     public function inscribe($id) {
 
-        $esperandoM = new EnEsperaModel();
+        $esperandoM = new EmailsInsModel();
         $mInscritos = new InscritosModel();
 
         $eEmailsIns = $esperandoM->find($id); /* solicitó inscripción por correo */

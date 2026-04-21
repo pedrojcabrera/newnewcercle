@@ -6,9 +6,13 @@ trait ConEventoQueryTrait
 {
     protected function fetchConEvento(array $selectFields): array
     {
-        return $this->select(implode(', ', $selectFields))
-            ->join('neventos', 'neventos.id = id_evento')
-            ->orderBy('fecha', 'DESC')
-            ->findAll();
+        $result = $this->db
+            ->table($this->table)
+            ->select(implode(', ', $selectFields))
+            ->join('neventos', 'neventos.id = ' . $this->table . '.id_evento')
+            ->orderBy($this->table . '.fecha', 'DESC')
+            ->get();
+
+        return $result ? $result->getResultObject() : [];
     }
 }

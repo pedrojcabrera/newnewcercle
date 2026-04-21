@@ -167,6 +167,7 @@ class Admin extends BaseController
                 ->where('desde_inscripcion <=', $hoy)
                 ->where('hasta_inscripcion >=', $hoy)
                 ->countAllResults(),
+            'emailsIns' => (int) $this->db->table('emails_inscripciones')->where('inscrito', 0)->countAllResults(),
         ];
 
         $mailingsResumen = $this->db->table('mailings_resumen')
@@ -219,6 +220,10 @@ class Admin extends BaseController
             'inscripcionManual' => [
                 'label' => 'Inscritos totales',
                 'value' => (int) $this->db->table('inscritos')->countAllResults(),
+            ],
+            'emailsIns' => [
+                'label' => 'Ya inscritos',
+                'value' => (int) $this->db->table('emails_inscripciones')->where('inscrito', 1)->countAllResults(),
             ],
         ];
 
