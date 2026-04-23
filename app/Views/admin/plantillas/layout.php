@@ -62,6 +62,9 @@
                     <a class="admin-nav-link<?= $isActiveAdminLink(['control/tipos']) ? ' is-active' : '' ?>" href="<?= base_url('control/tipos') ?>"<?= $isActiveAdminLink(['control/tipos']) ? ' aria-current="page"' : '' ?>><i class="bi bi-tags-fill"></i><span>Tipos de evento</span></a>
                     <a class="admin-nav-link<?= $isActiveAdminLink(['control/eventos', 'control/inscritos', 'control/invitados', 'control/enEspera', 'control/listarInscritos']) ? ' is-active' : '' ?>" href="<?= base_url('control/eventos') ?>"<?= $isActiveAdminLink(['control/eventos', 'control/inscritos', 'control/invitados', 'control/enEspera', 'control/listarInscritos']) ? ' aria-current="page"' : '' ?>><i class="bi bi-calendar-event-fill"></i><span>Eventos</span></a>
                     <a class="admin-nav-link<?= $isActiveAdminLink(['control/inscripcionManual']) ? ' is-active' : '' ?>" href="<?= base_url('control/inscripcionManual') ?>"<?= $isActiveAdminLink(['control/inscripcionManual']) ? ' aria-current="page"' : '' ?>><i class="bi bi-person-plus-fill"></i><span>Inscripción manual</span></a>
+                    <?php if ($isActiveAdminLink(['dashboard', 'dashboard/ayuda'])): ?>
+                    <a class="admin-nav-link admin-nav-link-help<?= $isActiveAdminLink(['dashboard/ayuda']) ? ' is-active' : '' ?>" href="<?= base_url('dashboard/ayuda') ?>"<?= $isActiveAdminLink(['dashboard/ayuda']) ? ' aria-current="page"' : '' ?>><i class="bi bi-question-circle-fill"></i><span>Ayuda</span></a>
+                    <?php endif; ?>
                 </nav>
 
                 <div class="admin-sidebar-footer">

@@ -44,6 +44,7 @@ $routes->group('galeristas', ['namespace' => 'App\Controllers\Galeristas'], func
 });
 
 $routes->get('dashboard', 'Admin::dashboard', ['filter' => 'auth']);
+$routes->get('dashboard/ayuda', 'Admin::ayuda', ['filter' => 'auth']);
 
 $routes->group('control', ['namespace' => 'App\Controllers\Admin', 'filter' => 'auth'], function ($routes) {
 

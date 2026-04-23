@@ -102,13 +102,17 @@ class Admin extends BaseController
         $this->session->regenerate(true);
         $this->session->set($data_session);
 
-        return $this->dashboard();
+        return redirect()->to(base_url('dashboard'));
 
     }
 
     public function dashboard(){
         return view('admin/dashboard', $this->buildDashboardData());
 
+    }
+
+    public function ayuda(){
+        return view('admin/ayuda', ['titulo' => 'Ayuda del Panel']);
     }
 
     private function buildDashboardData(): array
