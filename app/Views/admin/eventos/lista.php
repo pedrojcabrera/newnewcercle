@@ -77,7 +77,7 @@
                                 href="<?php echo base_url('control/inscritos/' . $evento->id); ?>"><i class="bi bi-card-checklist"></i></a>
                             <a title="Lista de Espera" class="btn btn-warning btn-sm"
                                 aria-label="Lista de espera"
-                                href="<?php echo base_url('control/enEspera/' . $evento->id); ?>"><i class="bi bi-hourglass-fill"></i></a>
+                                href="<?php echo base_url('control/enEspera/' . $evento->id); ?>"><i class="bi bi-hourglass-split"></i></a>
                             <?php endif; ?>
 
 
