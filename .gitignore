@@ -29,13 +29,6 @@ desktop.ini
 .env.*
 
 ############################
-# LOGS Y CACHE
-############################
-*.log
-*.cache
-*.tmp
-
-############################
 # TESTING / DEBUG
 ############################
 phpunit.xml
@@ -59,13 +52,6 @@ yarn-error.log*
 *.swp
 
 ############################
-# ARCHIVOS DE SESIÓN / RUNTIME
-############################
-sessions/*
-cache/*
-tmp/*
-
-############################
 # ARCHIVOS DE SERVIDOR
 ############################
 .htpasswd
@@ -76,9 +62,3 @@ tmp/*
 *.zip
 *.tar
 *.gz
-
-############################
-# ARCHIVOS DE GIT
-############################
-.gitignore
-.gitattributes
