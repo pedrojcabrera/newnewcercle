@@ -12,8 +12,10 @@ class Contactar extends BaseController
 
     public function index()
     {
+        $obra = $this->request->getGet('obra');
         $data = [
-            'titulo'    => 'Formulario de contacto'
+            'titulo'         => 'Formulario de contacto',
+            'mensajeInicial' => $obra ? 'Me interesa la obra: ' . esc((string) $obra) : '',
         ];
         return view('contactar/contactar',$data);
     }

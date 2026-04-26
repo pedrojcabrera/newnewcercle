@@ -18,8 +18,13 @@ $routes->post('/inscripcion', 'Eventos::inscripcion');
 $routes->get('/contactar', 'Contactar::index');
 $routes->post('/contactar/enviar', 'Contactar::submit');
 
-$routes->get('/pinturas', 'Galerias::lista');
-$routes->get('/pinturas/(:num)', 'Galerias::show/$1');
+$routes->get('sitemap.xml', 'Sitemap::index');
+$routes->get('privacidad', 'Home::privacidad');
+
+$routes->get('/galerias', 'Galerias::lista');
+$routes->get('/galerias/(:num)', 'Galerias::show/$1');
+$routes->addRedirect('pinturas', 'galerias', 301);
+$routes->addRedirect('pinturas/(:num)', 'galerias/$1', 301);
 
 /* -------------------------------- */
 

@@ -29,6 +29,11 @@ Options -Indexes
 	# Checks to see if the user is attempting to access a valid file,
 	# such as an image or css document, if this isn't true it sends the
 	# request to the front controller, index.php
+
+	# Force /galerias routes through CodeIgniter (directory with same name exists)
+	RewriteRule ^galerias/?$ index.php?/galerias [L,NC,QSA]
+	RewriteRule ^galerias/([0-9]+)/?$ index.php?/galerias/$1 [L,NC,QSA]
+
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteRule ^([\s\S]*)$ index.php?/$1 [L,NC,QSA]

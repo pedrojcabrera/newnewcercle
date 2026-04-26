@@ -44,4 +44,10 @@ class Home extends BaseController
 
         return view('home',$data);
     }
+
+    public function privacidad(): string
+    {
+        $data['titulo'] = 'Política de Privacidad';
+        return view('privacidad', $data);
+    }
 }

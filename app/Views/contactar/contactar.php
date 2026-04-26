@@ -45,7 +45,7 @@
       </div>
       <div class="mb-3">
          <textarea class="form-control" name="mensaje" id="mensaje" rows="3" placeholder="Mensaje / Comentarios"
-            required></textarea>
+            required><?= esc($mensajeInicial ?? '') ?></textarea>
       </div>
       <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
       <button type="submit" id="enviar" value="submit" class="btn btn-primary">Enviar</button>

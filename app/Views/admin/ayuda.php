@@ -234,6 +234,67 @@
         </div>
     </section>
 
+    <!-- ═══ BLOQUE: web pública ═══ -->
+    <section class="ayuda-block">
+        <h3 class="ayuda-block-title"><i class="bi bi-globe2 me-2"></i>Web pública — funcionalidades</h3>
+        <p class="ayuda-block-lead">Resumen de las secciones y características disponibles en la web pública de la asociación.</p>
+
+        <div class="ayuda-cards-grid">
+
+            <div class="ayuda-concept-card">
+                <div class="ayuda-concept-icon ayuda-icon-3"><i class="bi bi-calendar2-week-fill"></i></div>
+                <div class="ayuda-concept-body">
+                    <h4>Histórico de eventos</h4>
+                    <p>Accesible en <code>/eventos</code>. Muestra todos los eventos visibles paginados de 24 en 24, ordenados del más reciente al más antiguo.</p>
+                    <p>Dispone de un <strong>filtro por año</strong>: al pulsar un año solo se muestran los eventos cuya fecha de fin cae en ese año. La paginación conserva el año seleccionado.</p>
+                </div>
+            </div>
+
+            <div class="ayuda-concept-card">
+                <div class="ayuda-concept-icon ayuda-icon-4"><i class="bi bi-images"></i></div>
+                <div class="ayuda-concept-body">
+                    <h4>Galerías de artistas</h4>
+                    <p>Accesible en <code>/galerias</code> (antes <code>/pinturas</code>). Los enlaces antiguos a <code>/pinturas</code> redirigen automáticamente a la nueva URL con un código 301.</p>
+                    <p>Los artistas aparecen ordenados <strong>alfabéticamente por nombre</strong>. Cada obra en venta incluye un botón <em>«Contactar sobre esta obra»</em> que abre el formulario de contacto con el título de la obra pre-rellenado.</p>
+                </div>
+            </div>
+
+            <div class="ayuda-concept-card">
+                <div class="ayuda-concept-icon ayuda-icon-5"><i class="bi bi-share-fill"></i></div>
+                <div class="ayuda-concept-body">
+                    <h4>Compartir eventos</h4>
+                    <p>En la ficha de cada evento aparecen botones para compartir directamente en <strong>Twitter/X</strong>, <strong>Facebook</strong> y <strong>WhatsApp</strong>, facilitando la difusión de actividades.</p>
+                </div>
+            </div>
+
+            <div class="ayuda-concept-card">
+                <div class="ayuda-concept-icon ayuda-icon-6"><i class="bi bi-diagram-3-fill"></i></div>
+                <div class="ayuda-concept-body">
+                    <h4>Sitemap</h4>
+                    <p>Accesible en <code>/sitemap.xml</code>. Se genera dinámicamente e incluye la portada, las páginas principales, todos los eventos visibles y todas las galerías de artistas. Facilita la indexación por parte de Google y otros buscadores.</p>
+                </div>
+            </div>
+
+            <div class="ayuda-concept-card">
+                <div class="ayuda-concept-icon ayuda-icon-7"><i class="bi bi-shield-check-fill"></i></div>
+                <div class="ayuda-concept-body">
+                    <h4>Política de privacidad</h4>
+                    <p>Accesible en <code>/privacidad</code>. Informa a los visitantes sobre el uso de sus datos en los formularios y el uso de Google reCAPTCHA, en cumplimiento del RGPD.</p>
+                    <p>Un <strong>aviso de cookies</strong> aparece en la parte inferior de todas las páginas hasta que el visitante lo acepta (la aceptación se guarda en el navegador y no vuelve a mostrarse).</p>
+                </div>
+            </div>
+
+            <div class="ayuda-concept-card">
+                <div class="ayuda-concept-icon ayuda-icon-8"><i class="bi bi-window-fullscreen"></i></div>
+                <div class="ayuda-concept-body">
+                    <h4>Redes sociales (Open Graph)</h4>
+                    <p>Todas las páginas incluyen etiquetas <strong>Open Graph</strong>. Cuando alguien comparte un enlace en redes sociales, se muestra automáticamente el título, descripción e imagen correspondientes al evento o galería en cuestión, en lugar de un texto genérico.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
 </div>
 
 <?= $this->endSection(); ?>

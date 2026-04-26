@@ -27,7 +27,7 @@ class Galerias extends BaseController
         $this->sql->select('galerias.id_user, usuarios.nombre, COUNT(galerias.id) AS total_obras');
         $this->sql->join('usuarios', 'usuarios.id = id_user');
         $this->sql->groupBy('galerias.id_user, usuarios.nombre');
-        $this->sql->orderby('id_user' , 'ASC');
+        $this->sql->orderby('usuarios.nombre', 'ASC');
         $query = $this->sql->get();
 
         $artistas = $query->getResult();
@@ -62,14 +62,17 @@ class Galerias extends BaseController
         $obras = $query->getResult();
 
         if (count($obras) === 0) {
-            return redirect()->to(base_url('pinturas'));
+            return redirect()->to(base_url('galerias'));
         }
 
         $data = [
-            'titulo'  => 'Galería',
-            'obras'   => $obras,
-            'nombre'  => $obras[0]->nombre,
-            'artista' => $id
+            'titulo'        => 'Galería',
+            'obras'         => $obras,
+            'nombre'        => $obras[0]->nombre,
+            'artista'       => $id,
+            'ogType'        => 'article',
+            'ogImage'       => base_url('fotosUsuarios/' . $id . '.jpg'),
+            'ogDescription' => "Galería de " . esc($obras[0]->nombre) . " en el Cercle d'Art de Foios.",
         ];
 
         return view('galerias/show',$data);

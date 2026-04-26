@@ -30,15 +30,21 @@ class Eventos extends BaseController
 
     public function lista(): string
     {
+        $year = ($this->request->getGet('year') !== null && $this->request->getGet('year') !== '')
+            ? (int) $this->request->getGet('year')
+            : null;
         $page = (int) ($this->request->getGet('page') ?? 1);
-        $paginacion = $this->eventoModel->getListaEventosPaginada($page, 24);
+        $paginacion = $this->eventoModel->getListaEventosPaginada($page, 24, $year);
+        $years = $this->eventoModel->getAvailableYears();
 
         $data = [
-            'titulo'    => 'Histórico de Eventos',
-            'eventos'   => $paginacion['eventos'],
-            'page'      => $paginacion['page'],
-            'totalPages'=> $paginacion['totalPages'],
-            'total'     => $paginacion['total'],
+            'titulo'     => 'Histórico de Eventos',
+            'eventos'    => $paginacion['eventos'],
+            'page'       => $paginacion['page'],
+            'totalPages' => $paginacion['totalPages'],
+            'total'      => $paginacion['total'],
+            'year'       => $year,
+            'years'      => $years,
         ];
 
         return view('eventos/lista', $data);
@@ -56,12 +62,21 @@ class Eventos extends BaseController
         $fotos = $this->eventoModel->getEventoFotos($id);
         $admiteInscripcion = $this->eventoModel->admiteInscripcion($evento);
 
+        $textoPlano = strip_tags((string) ($evento->texto ?? ''));
+        $ogDescription = mb_substr($textoPlano, 0, 160);
+        if (mb_strlen($textoPlano) > 160) {
+            $ogDescription = mb_substr($ogDescription, 0, mb_strrpos($ogDescription, ' ')) . '…';
+        }
+
         $data = [
-            'titulo'       => 'Detalles del Evento',
-            'evento'       => $evento,
-            'pdf'          => $pdf,
-            'inscripcion'  => $admiteInscripcion,
-            'fotos'        => $fotos
+            'titulo'        => esc($evento->titulo),
+            'evento'        => $evento,
+            'pdf'           => $pdf,
+            'inscripcion'   => $admiteInscripcion,
+            'fotos'         => $fotos,
+            'ogType'        => 'article',
+            'ogImage'       => base_url('imgEventos/ev_' . $id . '/cartel.jpg'),
+            'ogDescription' => $ogDescription ?: "Evento del Cercle d'Art de Foios.",
         ];
 
         return view('eventos/show', $data);

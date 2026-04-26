@@ -46,6 +46,9 @@
             <span class="datosCuadro">Precio: </span> <?= esc($obra->precio) ?><small><small>€</small></small><span> (En
                venta)</span>
          </p>
+         <p>
+            <a href="<?= base_url('contactar?obra=' . rawurlencode($obra->titulo . ' de ' . $nombre)) ?>" class="btn btn-sm btn-outline-primary">Contactar sobre esta obra</a>
+         </p>
          <?php if(!empty($obra->premios)): ?>
          <hr>
          <p class="premios-4">
@@ -78,6 +81,14 @@ close.addEventListener("click", () => {
 modal.addEventListener("click", (e) => {
    if (e.target === modal) {
       modal.style.display = "none";
+   }
+});
+
+document.addEventListener("keydown", (e) => {
+   if (e.key === "Escape") {
+      modal.style.display = "none";
+   }
+});
    }
 });
 </script>

@@ -107,7 +107,7 @@ class EventosModel extends Model
      * @param int $perPage Cantidad por página
      * @return array{eventos: array, total: int, totalPages: int, page: int, perPage: int}
      */
-    public function getListaEventosPaginada(int $page = 1, int $perPage = 24): array
+    public function getListaEventosPaginada(int $page = 1, int $perPage = 24, ?int $year = null): array
     {
         $page = max(1, $page);
         $perPage = max(1, $perPage);
@@ -117,6 +117,10 @@ class EventosModel extends Model
         $baseBuilder = $db->table('neventos AS eventos')
             ->join('tiposeventos', 'tiposeventos.eventotipo = eventos.eventotipo')
             ->where('eventos.visible', 1);
+
+        if ($year !== null) {
+            $baseBuilder->where('YEAR(eventos.hasta)', $year);
+        }
 
         $total = (clone $baseBuilder)->countAllResults();
         $totalPages = max(1, (int) ceil($total / $perPage));
@@ -137,6 +141,18 @@ class EventosModel extends Model
             'page' => $page,
             'perPage' => $perPage,
         ];
+    }
+
+    /**
+     * Devuelve los años disponibles en eventos visibles (desc).
+     */
+    public function getAvailableYears(): array
+    {
+        $db = \Config\Database::connect();
+        $rows = $db->query(
+            'SELECT DISTINCT YEAR(hasta) AS year FROM neventos WHERE visible = 1 ORDER BY year DESC'
+        )->getResultArray();
+        return array_column($rows, 'year');
     }
 
     /**

@@ -39,6 +39,16 @@ if ($textoEventoHtml !== '') {
 
     </div>
 </div>
+
+<!-- Botones de compartir -->
+<div class="container mt-2 mb-3">
+    <div class="d-flex justify-content-center gap-2 flex-wrap align-items-center">
+        <span class="fw-semibold">Compartir:</span>
+        <a href="https://twitter.com/intent/tweet?text=<?= rawurlencode(esc($evento->titulo)) ?>&url=<?= rawurlencode(current_url()) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary">Twitter / X</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=<?= rawurlencode(current_url()) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary">Facebook</a>
+        <a href="https://api.whatsapp.com/send?text=<?= rawurlencode(esc($evento->titulo) . ' - ' . current_url()) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary">WhatsApp</a>
+    </div>
+</div>
 <article class="sobre_nosotros">
     <?= $textoEventoHtml ?>
 </article>
@@ -78,6 +88,12 @@ close.addEventListener("click", () => {
 
 modal.addEventListener("click", (e) => {
     if (e.target === modal) {
+        modal.style.display = "none";
+    }
+});
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
         modal.style.display = "none";
     }
 });

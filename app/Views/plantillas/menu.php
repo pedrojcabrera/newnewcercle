@@ -4,7 +4,7 @@
     <div class="menu">
         <ul id="mainNav">
             <li class="logo">
-                <h1><?=$titulo?></h1>
+                <p class="logo-texto"><?= esc($titulo ?? '') ?></p>
             </li>
             <li class="menu-toggle">
                 <button id="menuToggle" type="button" aria-label="Abrir o cerrar menu" aria-expanded="false" aria-controls="mainNav">&#9776;</button>
@@ -13,13 +13,13 @@
                 <a href="<?= base_url('/') ?>">Inicio</a>
             </li>
             <li class="menu-item hidden">
-                <a href="<?= base_url('ultimos_eventos') ?>">Ultimos Eventos</a>
+                <a href="<?= base_url('ultimos_eventos') ?>">Últimos Eventos</a>
             </li>
             <li class="menu-item hidden">
                 <a href="<?= base_url('eventos') ?>">Histórico</a>
             </li>
             <li class="menu-item hidden">
-                <a href="<?= base_url('pinturas') ?>">Galerías</a>
+                <a href="<?= base_url('galerias') ?>">Galerías</a>
             </li>
             <li class="menu-item hidden">
                 <a href="<?= base_url('contactar') ?>">Contactar</a>

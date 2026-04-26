@@ -113,6 +113,11 @@ header .logo {
 	padding: 0.4rem 0.5rem;
 }
 
+header .logo .logo-texto {
+	margin: 0;
+	line-height: 1;
+}
+
 header .menu-toggle {
 	display: none;
 	float: right;

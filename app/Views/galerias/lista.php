@@ -11,7 +11,7 @@
    ?>
 
    <figure>
-      <a href="<?php echo base_url('pinturas/' . $user)?>">
+         <a href="<?php echo base_url('galerias/' . $user)?>">
          <img src="<?php echo base_url('fotosUsuarios/' . $fotoUser)?>"
             onerror="this.onerror=null;this.src='<?= base_url('fotosUsuarios/sinfoto.jpg') ?>'"
             title="Ver la exposicion de <?php echo esc($nombres[$user])?>" alt="Foto de <?php echo esc($nombres[$user]) ?>">
