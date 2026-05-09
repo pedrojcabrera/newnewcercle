@@ -9,7 +9,7 @@ use App\Models\MailingsResumenModel;
 
 class Correos extends BaseController
 {
-    public $model;
+    public CorreosModel $model;
 
     private function construirPayloadCorreo(array $post, ?int $id = null): array
     {
@@ -267,12 +267,12 @@ class Correos extends BaseController
 
             $email->clear();
             $email->setSubject($correo->asunto);
-            $email->setTo($contacto->email, 'info@cercledartfoios.com');
+            $email->setTo([$contacto->email => 'info@cercledartfoios.com']);
 
             $cuerpo = $plantilla;
 
-            $cabeceraCorreo = "https://www.cercledartfoios.com/recursos/imagenes/logo_Cercle_125.png";
-            $cuerpo = str_replace('{{cabeceraCorreo}}', $cabeceraCorreo, $cuerpo);
+            $cabeceraCorreo = (string) base_url('recursos/imagenes/logo_Cercle_125.png');
+            $cuerpo = (string) str_replace('{{cabeceraCorreo}}', $cabeceraCorreo, $cuerpo);
 
             $cuerpo = str_replace('{{id}}', $contacto->id, $cuerpo);
             $cuerpo = str_replace('{{nombre}}', trim($contacto->nombre), $cuerpo);
@@ -412,8 +412,9 @@ class Correos extends BaseController
                 $hayError = true;
             } else {
                 $cuerpo = $plantilla;
-                $cuerpo = str_replace('{{cabeceraCorreo}}', 'https://www.cercledartfoios.com/recursos/imagenes/logo_Cercle_125.png', $cuerpo);
-                $cuerpo = str_replace('{{id}}',        $contacto->id,           $cuerpo);
+                $headerImg = (string) base_url('recursos/imagenes/logo_Cercle_125.png');
+                $cuerpo = (string) str_replace('{{cabeceraCorreo}}', $headerImg, $cuerpo);
+                $cuerpo = (string) str_replace('{{id}}',        $contacto->id,           $cuerpo);
                 $cuerpo = str_replace('{{nombre}}',    trim($contacto->nombre), $cuerpo);
                 $cuerpo = str_replace('{{email}}',     $contacto->email,        $cuerpo);
                 $cuerpo = str_replace('{{telefono}}',  $contacto->telefono,     $cuerpo);
@@ -427,7 +428,7 @@ class Correos extends BaseController
 
                 $emailSvc->clear();
                 $emailSvc->setSubject($correo->asunto);
-                $emailSvc->setTo($contacto->email, 'info@cercledartfoios.com');
+                $emailSvc->setTo([$contacto->email => 'info@cercledartfoios.com']);
                 $emailSvc->setMessage($cuerpo);
 
                 $hayError = !$emailSvc->send();

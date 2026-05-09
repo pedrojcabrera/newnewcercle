@@ -12,16 +12,16 @@ use App\Models\TiposEventosModel;
 class Eventos extends BaseController
 {
 
-  public $model;
-  public $db;
-  public $sql;
-  public $tipos;
-  public $contactos;
-  public $invitados;
-  public $inscritos;
-  public $enEspera;
-  public $hoy;
-  public $ahora;
+  public EventosModel $model;
+  public \CodeIgniter\Database\BaseConnection $db;
+  public \CodeIgniter\Database\BaseBuilder $sql;
+  public TiposEventosModel $tipos;
+  public ContactosModel $contactos;
+  public InvitadosModel $invitados;
+  public InscritosModel $inscritos;
+  public EnEsperaModel $enEspera;
+  public string $hoy;
+  public string $ahora;
 
   private function validarRangoFechas(?string $desde, ?string $hasta, string $errorKey, string $mensaje): bool
   {
@@ -406,7 +406,7 @@ class Eventos extends BaseController
     return redirect()->to(base_url('control/eventos'));
   }
 
-  private function _upload($origen, $camino, $destino)
+  private function _upload(\CodeIgniter\HTTP\Files\UploadedFile $origen, string $camino, string $destino): void
   {
     if (! is_dir($camino)) {
       mkdir($camino, 0755, true);
@@ -525,12 +525,12 @@ class Eventos extends BaseController
 
       $email->clear();
       $email->setSubject('Invitación a ' . $evento->titulo);
-      $email->setTo($contacto->email, 'info@cercledartfoios.com');
+      $email->setTo([$contacto->email => 'info@cercledartfoios.com']);
 
       $cuerpo         = $plantilla;
-      $cabeceraCorreo = "https://cercledartfoios.com/recursos/imagenes/anagramaColor.png";
+      $cabeceraCorreo = (string) base_url('recursos/imagenes/anagramaColor.png');
       //$cabeceraCorreo = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['SERVER_NAME'].'/public/recursos/imagenes/nofoto.jpg';
-      $cuerpo = str_replace('{{cabeceraCorreo}}', $cabeceraCorreo, $cuerpo);
+      $cuerpo = (string) str_replace('{{cabeceraCorreo}}', $cabeceraCorreo, $cuerpo);
 
       $cuerpo = str_replace('{{id}}', $contacto->id, $cuerpo);
       $cuerpo = str_replace('idcontacto', $contacto->id, $cuerpo);
@@ -628,7 +628,7 @@ class Eventos extends BaseController
     return view('admin/eventos/listaInvitados', $data);
   }
 
-  public function quitarInvitado($id)
+  public function quitarInvitado(?int $id)
   {
 
     $invitado  = $this->invitados->find($id);
@@ -703,7 +703,7 @@ class Eventos extends BaseController
 
   }
 
-  public function completaContactoDesdeInscrito($id)
+  public function completaContactoDesdeInscrito(?int $id)
   {
 
     $inscrito = $this->inscritos->find($id);
@@ -717,7 +717,7 @@ class Eventos extends BaseController
 
   }
 
-  public function inscribirInvitado($id, $id_evento)
+  public function inscribirInvitado(?int $id, ?int $id_evento)
   {
 
     $datosInvitado = $this->invitados->find($id);
@@ -769,7 +769,7 @@ class Eventos extends BaseController
     return view('admin/eventos/listaInscritos', $data);
   }
 
-  public function quitarInscrito($id)
+  public function quitarInscrito(?int $id)
   {
     $inscrito = $this->inscritos->find($id);
 
@@ -903,7 +903,7 @@ class Eventos extends BaseController
 
       $email->clear();
       $email->setSubject($correoAsunto);
-      $email->setTo($correoEmail, 'info@cercledartfoios.com');
+      $email->setTo([$correoEmail => 'info@cercledartfoios.com']);
 
       $email->setMessage($plantilla);
 
@@ -931,7 +931,7 @@ class Eventos extends BaseController
     return view('admin/eventos/listaDeEspera', $data);
   }
 
-  public function inscribirDeEspera($id)
+  public function inscribirDeEspera(?int $id)
   {
 
     $enEspera = $this->enEspera->find($id);
@@ -977,7 +977,7 @@ class Eventos extends BaseController
     return view('admin/eventos/listaDeEspera', $data);
   }
 
-  public function quitarDeEspera($id)
+  public function quitarDeEspera(?int $id)
   {
     $enEspera = $this->enEspera->find($id);
 
@@ -998,7 +998,7 @@ class Eventos extends BaseController
     return view('admin/eventos/listaDeEspera', $data);
   }
 
-  public function fotos($id)
+  public function fotos(?int $id)
   {
     $evento = $this->model->find($id);
 
@@ -1028,7 +1028,7 @@ class Eventos extends BaseController
     return view('admin/eventos/fotografias', $data);
   }
 
-  public function eliminarFoto($id, $foto)
+  public function eliminarFoto(?int $id, ?string $foto)
   {
 
     $evento = $this->model->find($id);
@@ -1044,7 +1044,7 @@ class Eventos extends BaseController
     return redirect()->to(base_url('control/fotos/' . $id));
   }
 
-  public function agregarFotos($id)
+  public function agregarFotos(?int $id)
   {
 
     $evento = $this->model->find($id);

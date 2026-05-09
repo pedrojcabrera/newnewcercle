@@ -70,15 +70,19 @@ header {
 
 header ul {
 	/* border-bottom: 1px solid rgba(242, 242, 242, 1); */
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+	gap: 0.15rem 0.2rem;
 	list-style-type: none;
 	margin: 0;
-	overflow: hidden;
+	overflow: visible;
 	padding: 0;
-	text-align: right;
 }
 
 header li {
-	display: inline-block;
+	display: block;
 }
 
 header li a {
@@ -106,23 +110,29 @@ header li.menu-item a:focus {
 
 header .logo {
 	color: #bf6300;
+	flex: 1 1 auto;
 	font-size: 2.5rem;
 	font-weight: 500;
-	float: left;
-	height: 44px;
+	height: auto;
+	min-width: 220px;
 	padding: 0.4rem 0.5rem;
 }
 
 header .logo .logo-texto {
+	display: block;
 	margin: 0;
-	line-height: 1;
+	line-height: 1.15;
+	overflow-wrap: break-word;
 }
 
 header .menu-toggle {
 	display: none;
-	float: right;
 	font-size: 2rem;
 	font-weight: bold;
+}
+
+header .menu-item {
+	flex: 0 0 auto;
 }
 
 header .menu-toggle button {
@@ -253,11 +263,17 @@ footer .copyrights {
 /* antes era 629px */
 @media (max-width: 768px) {
 	header ul {
+		display: block;
 		padding: 0;
+	}
+
+	header .logo {
+		min-width: 0;
 	}
 
 	header .menu-toggle {
 		padding: 0 1rem;
+		text-align: right;
 	}
 
 	header .menu-item {

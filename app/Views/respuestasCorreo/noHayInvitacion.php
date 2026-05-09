@@ -5,7 +5,7 @@
     'parrafos' => [
         'En estos momentos no encontramos ninguna invitación a su nombre en este evento.',
         'Es posible que haya sido cancelada por Aforo Completo, finalización del plazo de inscripción o por cualquier otro motivo.',
-        'Para cualquier aclaración o consulta, por favor, no dude en ponerse en contacto con nosotros a través de nuestro correo electrónico: correo@cercledartfoios.com o simplemente clicando <a href="mailto:correo@cercledarfoios.com">Aquí</a>.',
+        'Para cualquier aclaración o consulta, por favor, no dude en ponerse en contacto con nosotros a través de nuestro correo electrónico: correo@cercledartfoios.com o simplemente clicando <a href="mailto:correo@cercledartfoios.com">Aquí</a>.',
         'Gracias por su interés en nuestros eventos.',
         'Un saludo cordial del Cercle d\'Art de Foios.',
     ],
