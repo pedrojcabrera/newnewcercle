@@ -25,6 +25,7 @@
     </head>
 
     <body class="admin-body">
+        <?php /** @var string $titulo */ ?>
         <?php if (session()->logueado): ?>
         <?php
         $currentPath = trim(service('request')->getUri()->getPath(), '/');
@@ -52,7 +53,7 @@
                     <img src="<?= base_url('recursos/imagenes/anagramaColor.png'); ?>" alt="Cercle d'Art de Foios">
                 </a>
 
-                <nav class="admin-sidebar-nav" aria-label="Menú administración">
+                <nav class="admin-sidebar-nav" id="admin-sidebar-nav" aria-label="Menú administración">
                     <a class="admin-nav-link<?= $isActiveAdminLink(['dashboard']) ? ' is-active' : '' ?>" href="<?= base_url('dashboard') ?>"<?= $isActiveAdminLink(['dashboard']) ? ' aria-current="page"' : '' ?>><i class="bi bi-house-door-fill"></i><span>Inicio</span></a>
                     <a class="admin-nav-link<?= $isActiveAdminLink(['control/usuarios']) ? ' is-active' : '' ?>" href="<?= base_url('control/usuarios') ?>"<?= $isActiveAdminLink(['control/usuarios']) ? ' aria-current="page"' : '' ?>><i class="bi bi-people-fill"></i><span>Usuarios</span></a>
                     <a class="admin-nav-link<?= $isActiveAdminLink(['control/sistema']) ? ' is-active' : '' ?>" href="<?= base_url('control/sistema') ?>"<?= $isActiveAdminLink(['control/sistema']) ? ' aria-current="page"' : '' ?>><i class="bi bi-gear-fill"></i><span>Sistema</span></a>
@@ -77,7 +78,13 @@
 
             <div class="admin-content">
                 <header class="admin-actionbar">
-                    <h1 class="admin-action-title"><?= esc($titulo ?? 'Administración') ?></h1>
+                    <div class="admin-actionbar-inner">
+                        <button type="button" class="btn btn-outline-primary btn-sm admin-sidebar-toggle" aria-expanded="true" aria-controls="admin-sidebar-nav" title="Contraer o restaurar menú">
+                            <i class="bi bi-layout-sidebar-inset"></i>
+                            <span>Contraer menú</span>
+                        </button>
+                        <h1 class="admin-action-title"><?= (string) esc((string) ($titulo ?? 'Administración')) ?></h1>
+                    </div>
                 </header>
 
                 <main class="admin-main container-fluid px-3 px-md-4 pb-4">

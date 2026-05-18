@@ -1,3 +1,4 @@
+<?php /** @var string $titulo */ ?>
 <?php if (session()->logueado): ?>
 <header class="admin-topbar sticky-top shadow-sm">
     <div class="container-fluid px-3 px-md-4">
@@ -7,7 +8,7 @@
                     alt="Cercle d'Art de Foios">
                 <div class="min-w-0">
                     <div class="admin-eyebrow">Backoffice</div>
-                    <h1 class="admin-title mb-0"><?php echo esc($titulo); ?></h1>
+                    <h1 class="admin-title mb-0"><?php echo (string) esc((string) ($titulo ?? 'Administración')); ?></h1>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-2">

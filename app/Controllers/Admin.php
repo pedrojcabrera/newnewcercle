@@ -4,15 +4,17 @@ namespace App\Controllers;
 
 use App\Models\UsuariosModel;
 use App\Models\CercledartfoiosModel;
+use CodeIgniter\Database\BaseBuilder;
+use CodeIgniter\Database\BaseConnection;
 
 class Admin extends BaseController
 {
-    private $UsuarioModel;
-    private $SistemaModel;
+    private UsuariosModel $UsuarioModel;
+    private CercledartfoiosModel $SistemaModel;
 
     private $id;
-    private $db;
-    private $sql;
+    private BaseConnection $db;
+    private BaseBuilder $sql;
 
     public function __construct()
     {
@@ -215,11 +217,21 @@ class Admin extends BaseController
                 'value' => (int) $this->db->table('neventos')->select('eventotipo')->groupBy('eventotipo')->countAllResults(),
             ],
             'eventos' => [
-                'label' => 'Invitados pendientes',
-                'value' => (int) $this->db->table('invitados')
-                    ->where('inscrito', 0)
-                    ->where('enespera', 0)
-                    ->countAllResults(),
+                'items' => [
+                    [
+                        'label' => 'Eventos abiertos',
+                        'value' => (int) $this->db->table('neventos')
+                            ->where('evento_cerrado', 0)
+                            ->countAllResults(),
+                    ],
+                    [
+                        'label' => 'Eventos próximos',
+                        'value' => (int) $this->db->table('neventos')
+                            ->where('evento_cerrado', 0)
+                            ->where('desde >', $hoy)
+                            ->countAllResults(),
+                    ],
+                ],
             ],
             'inscripcionManual' => [
                 'label' => 'Inscritos totales',

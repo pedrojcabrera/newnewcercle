@@ -37,16 +37,42 @@ function initNativeTables() {
         };
 
         const tools = document.createElement('div');
-        tools.className = 'd-flex flex-wrap gap-2 justify-content-between align-items-center mb-2';
+        tools.className = 'mb-2';
+        tools.classList.add('native-table-tools');
 
-        const leftTools = document.createElement('div');
-        leftTools.className = 'd-flex flex-wrap align-items-center gap-2';
+        const topRow = document.createElement('div');
+        topRow.className = 'd-flex justify-content-between align-items-center gap-2';
+        topRow.classList.add('native-table-tools-row', 'native-table-tools-row-top');
+
+        const topLeft = document.createElement('div');
+        topLeft.className = 'd-flex align-items-center gap-2';
+        topLeft.classList.add('native-table-tools-top-left');
+
+        const topRight = document.createElement('div');
+        topRight.className = 'd-flex align-items-center gap-2';
+        topRight.classList.add('native-table-tools-top-right');
+
+        const bottomRow = document.createElement('div');
+        bottomRow.className = 'd-flex justify-content-between align-items-center gap-2';
+        bottomRow.classList.add('native-table-tools-row', 'native-table-tools-row-bottom');
+
+        const bottomLeft = document.createElement('div');
+        bottomLeft.className = 'd-flex align-items-center gap-2';
+        bottomLeft.classList.add('native-table-tools-bottom-left');
+
+        const bottomRight = document.createElement('div');
+        bottomRight.className = 'd-flex align-items-center gap-2';
+        bottomRight.classList.add('native-table-tools-bottom-right');
 
         const searchInput = document.createElement('input');
         searchInput.type = 'search';
         searchInput.className = 'form-control form-control-sm';
         searchInput.style.maxWidth = '260px';
         searchInput.placeholder = 'Buscar (Enter)...';
+
+        const filterMode = table.dataset.nativeFilterMode || '';
+        const filterName = table.dataset.nativeFilterName || 'estado';
+        const filterValue = table.dataset.nativeFilterValue || 'todos';
 
         const sizeSelect = document.createElement('select');
         sizeSelect.className = 'form-select form-select-sm';
@@ -65,12 +91,63 @@ function initNativeTables() {
         sizeLabel.className = 'text-muted';
         sizeLabel.textContent = 'Filas por pagina';
 
-        leftTools.appendChild(searchInput);
-        leftTools.appendChild(sizeLabel);
-        leftTools.appendChild(sizeSelect);
+        topLeft.appendChild(searchInput);
 
-        const rightTools = document.createElement('div');
-        rightTools.className = 'd-flex flex-wrap align-items-center gap-2';
+        if (filterMode === 'event-status') {
+            const filterWrap = document.createElement('div');
+            filterWrap.className = 'd-flex align-items-center gap-3';
+            filterWrap.classList.add('native-table-filter-group');
+
+            const options = [
+                { value: 'todos', label: 'Todos' },
+                { value: 'proximos', label: 'Próximos' },
+                { value: 'encurso', label: 'En curso' },
+                { value: 'cerrados', label: 'Cerrados' },
+                { value: 'finalizados', label: 'Sin cerrar' },
+            ];
+
+            options.forEach((option, index) => {
+                const optionWrap = document.createElement('div');
+                optionWrap.className = 'form-check form-check-inline m-0';
+
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.className = 'form-check-input';
+                input.name = `${filterName}-${table.id || 'table'}-filter`;
+                input.id = `${filterName}-${table.id || 'table'}-${option.value}-${index}`;
+                input.value = option.value;
+                input.checked = option.value === filterValue;
+
+                input.addEventListener('change', () => {
+                    if (!input.checked) {
+                        return;
+                    }
+
+                    const url = new window.URL(window.location.href);
+                    if (input.value === 'todos') {
+                        url.searchParams.delete(filterName);
+                    } else {
+                        url.searchParams.set(filterName, input.value);
+                    }
+                    url.searchParams.delete('page');
+                    window.location.href = url.toString();
+                });
+
+                const label = document.createElement('label');
+                label.className = 'form-check-label';
+                label.htmlFor = input.id;
+                label.textContent = option.label;
+
+                optionWrap.appendChild(input);
+                optionWrap.appendChild(label);
+                filterWrap.appendChild(optionWrap);
+            });
+
+            topRight.appendChild(filterWrap);
+        }
+
+        bottomLeft.appendChild(sizeLabel);
+        bottomLeft.appendChild(sizeSelect);
 
         const info = document.createElement('small');
         info.className = 'text-muted';
@@ -95,14 +172,18 @@ function initNativeTables() {
         btnLast.className = 'btn btn-outline-secondary btn-sm';
         btnLast.textContent = '>>';
 
-        rightTools.appendChild(info);
-        rightTools.appendChild(btnFirst);
-        rightTools.appendChild(btnPrev);
-        rightTools.appendChild(btnNext);
-        rightTools.appendChild(btnLast);
+        bottomRight.appendChild(info);
+        bottomRight.appendChild(btnFirst);
+        bottomRight.appendChild(btnPrev);
+        bottomRight.appendChild(btnNext);
+        bottomRight.appendChild(btnLast);
 
-        tools.appendChild(leftTools);
-        tools.appendChild(rightTools);
+        topRow.appendChild(topLeft);
+        topRow.appendChild(topRight);
+        bottomRow.appendChild(bottomLeft);
+        bottomRow.appendChild(bottomRight);
+        tools.appendChild(topRow);
+        tools.appendChild(bottomRow);
 
         const wrapper = table.closest('.table-responsive-sm') || table.parentElement;
         wrapper.parentNode.insertBefore(tools, wrapper);
@@ -200,6 +281,41 @@ function initNativeTables() {
 
         table.dataset.nativeTable = '1';
         renderPage();
+    });
+}
+
+function initAdminSidebarToggle() {
+    const shell = document.querySelector('.admin-shell');
+    const button = document.querySelector('.admin-sidebar-toggle');
+
+    if (!shell || !button) {
+        return;
+    }
+
+    const storageKey = 'adminSidebarCollapsed';
+
+    const applyState = (collapsed) => {
+        shell.classList.toggle('is-sidebar-collapsed', collapsed);
+        button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        button.setAttribute('title', collapsed ? 'Restaurar menú' : 'Contraer menú');
+
+        const icon = button.querySelector('i');
+        if (icon) {
+            icon.className = collapsed ? 'bi bi-layout-sidebar bi-rotate-180' : 'bi bi-layout-sidebar-inset';
+        }
+
+        const label = button.querySelector('span');
+        if (label) {
+            label.textContent = collapsed ? 'Restaurar menú' : 'Contraer menú';
+        }
+    };
+
+    applyState(window.localStorage.getItem(storageKey) === '1');
+
+    button.addEventListener('click', () => {
+        const collapsed = !shell.classList.contains('is-sidebar-collapsed');
+        window.localStorage.setItem(storageKey, collapsed ? '1' : '0');
+        applyState(collapsed);
     });
 }
 
@@ -347,6 +463,7 @@ function placeAndCloneActionBars() {
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
+        initAdminSidebarToggle();
         upgradeLegacyFormActionBars();
         placeAndCloneActionBars();
         bindActionBarsToNearestForm();
@@ -354,6 +471,7 @@ if (document.readyState === 'loading') {
         window.setTimeout(initNativeTables, 0);
     }, { once: true });
 } else {
+    initAdminSidebarToggle();
     upgradeLegacyFormActionBars();
     placeAndCloneActionBars();
     bindActionBarsToNearestForm();

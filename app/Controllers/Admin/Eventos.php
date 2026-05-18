@@ -12,6 +12,8 @@ use App\Models\TiposEventosModel;
 class Eventos extends BaseController
 {
 
+  private const ESTADOS_FILTRO = ['todos', 'proximos', 'encurso', 'finalizados', 'cerrados'];
+
   public EventosModel $model;
   public \CodeIgniter\Database\BaseConnection $db;
   public \CodeIgniter\Database\BaseBuilder $sql;
@@ -114,6 +116,52 @@ class Eventos extends BaseController
     return null;
   }
 
+  private function getEstadoFiltro(): string
+  {
+    $estado = strtolower(trim((string) $this->request->getGet('estado')));
+
+    if (! in_array($estado, self::ESTADOS_FILTRO, true)) {
+      return 'todos';
+    }
+
+    return $estado;
+  }
+
+  private function aplicarFiltroEstado(
+    \CodeIgniter\Database\BaseBuilder $builder,
+    string $estado,
+    string $hoy
+  ): void {
+    switch ($estado) {
+      case 'proximos':
+        $builder
+          ->where('eventos.evento_cerrado', 0)
+          ->where('eventos.desde >', $hoy);
+        break;
+
+      case 'encurso':
+        $builder
+          ->where('eventos.evento_cerrado', 0)
+          ->where('eventos.desde <=', $hoy)
+          ->where('eventos.hasta >=', $hoy);
+        break;
+
+      case 'finalizados':
+        $builder
+          ->where('eventos.evento_cerrado', 0)
+          ->where('eventos.hasta <', $hoy);
+        break;
+
+      case 'cerrados':
+        $builder->where('eventos.evento_cerrado', 1);
+        break;
+
+      case 'todos':
+      default:
+        break;
+    }
+  }
+
   private function buildUnsubscribeToken(int $contactoId, string $scope): ?string
   {
     $secret = $this->getUnsubscribeSecret();
@@ -138,28 +186,36 @@ class Eventos extends BaseController
   public function lista()
   {
     $perPage = 25;
-    $page = $this->request->getVar('page') ?? 1;
+    $page = max(1, (int) ($this->request->getVar('page') ?? 1));
+    $hoy = date('Y-m-d');
+    $estadoFiltro = $this->getEstadoFiltro();
+
+    $totalBuilder = $this->db->table('neventos AS eventos');
+    $this->aplicarFiltroEstado($totalBuilder, $estadoFiltro, $hoy);
+    $total = (int) $totalBuilder->countAllResults();
+    $totalPages = max(1, (int) ceil($total / $perPage));
+
+    if ($page > $totalPages) {
+      $page = $totalPages;
+    }
+
     $offset = ($page - 1) * $perPage;
 
-    // Contar total usando método dedicado
-    $total = $this->model->countAllResults();
-    $totalPages = ceil($total / $perPage);
+    $builder = $this->db->table('neventos AS eventos');
+    $builder->select('eventos.*, eventos.desde, eventos.hasta, tiposeventos.eventonombre AS grupo');
+    $builder->join('tiposeventos', 'tiposeventos.eventotipo = eventos.eventotipo');
+    $this->aplicarFiltroEstado($builder, $estadoFiltro, $hoy);
+    $builder->orderby('eventos.id', 'DESC');
+    $builder->limit($perPage, $offset);
 
-    // Obtener eventos paginados
-    $this->sql->select('eventos.*, eventos.desde, eventos.hasta, tiposeventos.eventonombre AS grupo');
-    $this->sql->join('tiposeventos', 'tiposeventos.eventotipo = eventos.eventotipo');
-    $this->sql->orderby('eventos.id', 'DESC');
-    $this->sql->limit($perPage, $offset);
-
-    $query = $this->sql->get();
+    $query = $builder->get();
     $eventos = $query->getResult();
-
-    $hoy = date('Y-m-d');
 
     $data = [
       'titulo'  => 'Eventos',
       'eventos' => $eventos,
       'hoy'     => $hoy,
+      'estadoFiltro' => $estadoFiltro,
       'page' => $page,
       'totalPages' => $totalPages,
       'total' => $total,

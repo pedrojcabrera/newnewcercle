@@ -1,5 +1,15 @@
+<?php
+/** @var array<int, object> $eventos */
+/** @var string $hoy */
+/** @var int $page */
+/** @var int $totalPages */
+/** @var int $total */
+/** @var string $estadoFiltro */
+?>
 <?= $this->extend('admin/plantillas/layout'); ?>
 <?= $this->section('contenido'); ?>
+<?php $estadoFiltro = $estadoFiltro ?? 'todos'; ?>
+<?php $estadoQuery = $estadoFiltro !== 'todos' ? '&estado=' . urlencode((string) $estadoFiltro) : ''; ?>
 <div class="container">
     <div class="botones-superiores">
         <div class="boton-agregar">
@@ -9,7 +19,7 @@
     </div>
     <div class="card-body">
         <div class="table-responsive-sm">
-            <table class="miTabla mt-3" id="datatable">
+            <table class="miTabla mt-3" id="datatable" data-native-filter-mode="event-status" data-native-filter-name="estado" data-native-filter-value="<?= (string) esc((string) $estadoFiltro) ?>">
                 <thead>
                     <tr>
                         <th>Cartel</th>
@@ -102,15 +112,15 @@
     <?php if ($totalPages > 1): ?>
     <div class="d-flex justify-content-center gap-2 mt-3">
         <?php if ($page > 1): ?>
-        <a href="<?= base_url('control/eventos?page=1') ?>" class="btn btn-sm btn-outline-secondary">Primero</a>
-        <a href="<?= base_url('control/eventos?page=' . ($page - 1)) ?>" class="btn btn-sm btn-outline-secondary">Anterior</a>
+        <a href="<?= base_url('control/eventos?page=1' . $estadoQuery) ?>" class="btn btn-sm btn-outline-secondary">Primero</a>
+        <a href="<?= base_url('control/eventos?page=' . ($page - 1) . $estadoQuery) ?>" class="btn btn-sm btn-outline-secondary">Anterior</a>
         <?php endif; ?>
 
         <span class="btn btn-sm btn-light" disabled>Página <?= $page ?> de <?= $totalPages ?> (<?= $total ?> eventos)</span>
 
         <?php if ($page < $totalPages): ?>
-        <a href="<?= base_url('control/eventos?page=' . ($page + 1)) ?>" class="btn btn-sm btn-outline-secondary">Siguiente</a>
-        <a href="<?= base_url('control/eventos?page=' . $totalPages) ?>" class="btn btn-sm btn-outline-secondary">Último</a>
+        <a href="<?= base_url('control/eventos?page=' . ($page + 1) . $estadoQuery) ?>" class="btn btn-sm btn-outline-secondary">Siguiente</a>
+        <a href="<?= base_url('control/eventos?page=' . $totalPages . $estadoQuery) ?>" class="btn btn-sm btn-outline-secondary">Último</a>
         <?php endif; ?>
     </div>
     <?php endif; ?>
